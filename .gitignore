@@ -1,0 +1,34 @@
+# Node.js dependencies
+frontend/node_modules/
+frontend/.env
+
+# Build output
+frontend/build/
+
+# Logs
+frontend/logs/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.vscode/
+.idea/
+*.swp
+
+# Go build files
+backend/*.exe
+backend/*.out
+backend/*.log
+backend/.env
+
+# Git-related
+.git/
+
+# Miscellaneous
+*.log
+*.tmp

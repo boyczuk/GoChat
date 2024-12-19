@@ -1,0 +1,36 @@
+.messaging-box {
+    border: 2px solid black;
+    border-radius: 10px;
+    height: 78vh;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sent-messages {
+    display: flex;
+    flex-direction: column-reverse;
+    overflow-y: auto;
+    height: 90%;
+    background-color: #f9f9f9;
+}
+
+.left-aligned {
+    align-self: flex-start;
+    background-color: #d1e7dd;
+    color: #0f5132;
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin: 5px 0;
+    max-width: 60%;
+}
+
+.right-aligned {
+    align-self: flex-end;
+    background-color: #cfe2ff;
+    color: #084298;
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin: 5px 0;
+    max-width: 60%;
+}
