@@ -1,13 +1,14 @@
 import UserList from './components/UserList';
 import MessagingBox from './components/MessagingBox';
 import './App.css';
+import UserProfileCard from './components/UserProfileCard';
 
 function App() {
   return (
     <div className='main-page'>
       <div className='container'>
         <div className='users-window'>
-          <h1>People</h1>
+          <UserProfileCard />
           <UserList />
         </div>
         <div className='message-window'>
