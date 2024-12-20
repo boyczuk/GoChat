@@ -25,6 +25,63 @@ func initDB() {
 	}
 }
 
+func getLoggedInUser(c *gin.Context) {
+	// get token from cookies
+	sessionToken, err := c.Cookie("session_token")
+	if err != nil {
+		c.JSON(http.StatusUnauthorized,
+			gin.H{"error": "You are not logged in."},
+		)
+		return
+	}
+
+	var userID int
+
+	// Check user_id associated with sessionToken
+	err = db.QueryRow(
+		"SELECT user_id FROM sessions WHERE session_token = $1", sessionToken,
+	).Scan(&userID)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid session or session expired."})
+		return
+	}
+
+	var username string
+	err = db.QueryRow(
+		"SELECT username FROM users WHERE id = $1", userID,
+	).Scan(&username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retreive uer info."})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"username": username})
+}
+
+func logoutUser(c *gin.Context) {
+	sessionToken, err := c.Cookie("session_token")
+	if err != nil {
+		c.JSON(
+			http.StatusUnauthorized,
+			gin.H{"error": "You are not logged in."},
+		)
+		return
+	}
+
+	_, err = db.Exec("DELETE FROM sessions WHERE session_token = $1", sessionToken)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"error": "Failed to log out."},
+		)
+		return
+	}
+
+	c.SetCookie("session_token", "", -1, "/", "localhost", false, true)
+
+	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully."})
+}
+
 func loginUser(c *gin.Context) {
 	var req struct {
 		Username string `json:"username"`
@@ -149,5 +206,7 @@ func main() {
 	// Route for registering user
 	r.POST("/register", registerUser)
 	r.POST("/login", loginUser)
+	r.POST("/logout", logoutUser)
+	r.GET("/me", getLoggedInUser)
 	r.Run(":8080")
 }
