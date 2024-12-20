@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import './UserProfileCard.css';
+import './styles/UserProfileCard.css';
 
 function UserProfileCard() {
     const [username, setUsername] = useState(null);

@@ -1,5 +1,5 @@
 import defaultProfilePicture from './images/pfptemp.jpg';
-import './UserList.css'
+import './styles/UserList.css'
 
 function UserList() {
     const users = [

@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 import MessageInput from './MessageInput';
-import './MessagingBox.css';
+import './styles/MessagingBox.css';
 
 function MessagingBox() {
     const messageHistory = [["user1", "Hey!"], ["user1", "How's it going?"], ["user2", "Not bad what about you?"], ["user1", "Eh could be better..."], ["user2", "Why what's wrong"], ["user1", "Don't worry about it."], ["user1", "Hey!"], ["user1", "How's it going?"], ["user2", "Not bad what about you?"], ["user1", "Eh could be better..."], ["user2", "Why what's wrong"], ["user1", "Don't worry about it."], ["user1", "Hey!"], ["user1", "How's it going?"], ["user2", "Not bad what about you?"], ["user1", "Eh could be better..."], ["user2", "Why what's wrong"], ["user1", "Don't worry about it."]];

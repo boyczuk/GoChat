@@ -1,5 +1,5 @@
 import { useState } from "react";
-import './MessageInput.css';
+import './styles/MessageInput.css';
 
 function MessageInput() {
     const [inputValue, setInputValue] = useState("");

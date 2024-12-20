@@ -1,23 +1,21 @@
-import UserList from './components/UserList';
-import MessagingBox from './components/MessagingBox';
+import { useState, useEffect } from "react";
+import HomeLoggedIn from "./pages/HomeLoggedIn";
+import HomeLoggedOut from './pages/HomeLoggedOut';
 import './App.css';
-import UserProfileCard from './components/UserProfileCard';
 
 function App() {
-  return (
-    <div className='main-page'>
-      <div className='container'>
-        <div className='users-window'>
-          <UserProfileCard />
-          <UserList />
-        </div>
-        <div className='message-window'>
-          <h1>Person</h1>
-          <MessagingBox />
-        </div>
-      </div>
-    </div>
-  );
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+	useEffect(() => {
+		const sessionToken = document.cookie.includes("session_token");
+		setIsLoggedIn(sessionToken);
+	}, []);
+
+	return (
+		<div className="App">
+			{isLoggedIn ? <HomeLoggedIn /> : <HomeLoggedOut />}
+		</div>	
+  	);
 }
 
 export default App;
