@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import './styles/LoginForm.css';
 
-function LoginForm() {
+function LoginForm({ onLoginSuccess }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -18,38 +18,39 @@ function LoginForm() {
                 { withCredentials: true }
             );
             console.log(response.data.message);
-            window.location.reload();
+            // Set login to successful when post request successfully sent
+            onLoginSuccess();
         } catch (err) {
             setError(err.response?.data?.error || "An unexpected error occurred.");
         }
     };
 
     return (
-        <div className='login-form-container'>
+        <div className="login-form-container">
             <h2>Login</h2>
-            {error && <p className='error-message'>{error}</p>}
+            {error && <p className="error-message">{error}</p>}
             <form onSubmit={handleSubmit}>
-                <div className='form-group'>
-                    <label htmlFor='username'>Username</label>
+                <div className="form-group">
+                    <label htmlFor="username">Username</label>
                     <input
-                        type='text'
-                        id='username'
+                        type="text"
+                        id="username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
                     />
                 </div>
-                <div className='form-group'>
-                    <label htmlFor='password'>Password</label>
+                <div className="form-group">
+                    <label htmlFor="password">Password</label>
                     <input
-                        type='password'
-                        id='password'
+                        type="password"
+                        id="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
                 </div>
-                <button type='submit'>Log In</button>
+                <button type="submit">Log In</button>
             </form>
         </div>
     )

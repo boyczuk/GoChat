@@ -1,21 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import HomeLoggedIn from "./pages/HomeLoggedIn";
-import HomeLoggedOut from './pages/HomeLoggedOut';
-import './App.css';
+import HomeLoggedOut from "./pages/HomeLoggedOut";
+import "./App.css";
 
 function App() {
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-	useEffect(() => {
-		const sessionToken = document.cookie.includes("session_token");
-		setIsLoggedIn(sessionToken);
-	}, []);
-
-	return (
-		<div className="App">
-			{isLoggedIn ? <HomeLoggedIn /> : <HomeLoggedOut />}
-		</div>	
-  	);
+    return (
+        <div className="App">
+			{/* If logged in display top, otherwise display logged out until login success and set it to true */}
+            {isLoggedIn ? (
+                <HomeLoggedIn />
+            ) : (
+                <HomeLoggedOut onLoginSuccess={() => setIsLoggedIn(true)} />
+            )}
+        </div>
+    );
 }
 
 export default App;
