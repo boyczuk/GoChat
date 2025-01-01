@@ -36,3 +36,19 @@
 .login-form {
     width: 100%;
 }
+
+.switch-button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #007bff; /* Blue background */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.switch-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}

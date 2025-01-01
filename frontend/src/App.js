@@ -8,12 +8,17 @@ function App() {
 
     return (
         <div className="App">
-			{/* If logged in display top, otherwise display logged out until login success and set it to true */}
+            {/* If logged in display top, otherwise display logged out until login success and set it to true */}
             {isLoggedIn ? (
-                <HomeLoggedIn />
+                <div className="logged-in">
+                    <HomeLoggedIn />
+                </div>
             ) : (
-                <HomeLoggedOut onLoginSuccess={() => setIsLoggedIn(true)} />
+                <div className="logged-out">
+                    <HomeLoggedOut onLoginSuccess={() => setIsLoggedIn(true)} />
+                </div>
             )}
+
         </div>
     );
 }
