@@ -42,7 +42,7 @@
     box-sizing: border-box;
 }
 
-button {
+.submit-button {
     padding: 0.7rem 1.5rem;
     font-size: 1rem;
     background-color: #007bff;

@@ -50,7 +50,7 @@ function LoginForm({ onLoginSuccess }) {
                         required
                     />
                 </div>
-                <button type="submit">Log In</button>
+                <button className='submit-button' type="submit">Log In</button>
             </form>
         </div>
     )

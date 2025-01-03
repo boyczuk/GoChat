@@ -39,16 +39,19 @@
 
 .switch-button {
     margin-top: 1rem;
-    padding: 0.5rem 1rem;
+    padding: 0; 
     font-size: 1rem;
-    background-color: #007bff; /* Blue background */
-    color: white;
+    color: #007bff; 
+    background: none; 
     border: none;
-    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    text-decoration: none;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: color 0.3s ease;
 }
 
 .switch-button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    text-decoration: underline;
+    background: none;
 }
