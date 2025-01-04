@@ -2,18 +2,38 @@ package main
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/gorilla/websocket"
 	_ "github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 )
 
 var db *sql.DB
+
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+// Creating map to store websocket clients and their associated IDs
+var clients = make(map[*websocket.Conn]int)
+
+// Channel for sending messages between clients
+var broadcast = make(chan Message)
+
+type Message struct {
+	SenderID   int    `json:"sender_d"`
+	ReceiverID int    `json:"receiver_id"`
+	Content    string `json:"content"`
+	Timestamp  string `json:"timestamp"`
+}
 
 func initDB() {
 	var err error
@@ -22,7 +42,100 @@ func initDB() {
 		"host=localhost user=postgres password=temppassword dbname=chat_app sslmode=disable",
 	)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
+	}
+}
+
+// WebSocket handler to manage new connections (w - sending, r - info received)
+func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println("Error upgrading to WebSocket:", err)
+		return
+	}
+	defer conn.Close()
+
+	userID := r.URL.Query().Get("user_id")
+	if userID == "" {
+		// send this string to connection
+		conn.WriteMessage(websocket.CloseMessage, []byte("User ID required"))
+		return
+	}
+
+	var userIDInt int
+	_, err = fmt.Sscanf(userID, "%d", &userIDInt)
+	if err != nil {
+		conn.WriteMessage(websocket.CloseMessage, []byte("Invalid User ID"))
+		return
+	}
+
+	// Add the connection to the clients map
+	clients[conn] = userIDInt
+	fmt.Printf("User connected: %d\n", userIDInt)
+
+	// Wait for messages from client
+	for {
+		var msg Message
+		err := conn.ReadJSON(&msg)
+		if err != nil {
+			fmt.Printf("Error reading message: %v\n", err)
+			// Delete the element using key: conn from map clients
+			delete(clients, conn)
+			break
+		}
+
+		// Add sender id to message
+		msg.SenderID = userIDInt
+		msg.Timestamp = time.Now().Format("2006-01-02 15:04:05")
+		// Save the message to DB
+		saveMessageToDB(msg)
+		// Send message to other user
+		sendMessageToReceiver(msg)
+	}
+}
+
+func saveMessageToDB(msg Message) {
+	_, err := db.Exec(
+		"INSERT INTO messages (sender_id, receiver_id, content) VALUES ($1, $2, $3)",
+		msg.SenderID, msg.ReceiverID, msg.Content,
+	)
+	if err != nil {
+		fmt.Printf("Error saving message to DB: %v\n", err)
+	}
+}
+
+func sendMessageToReceiver(msg Message) {
+	for client, id := range clients {
+		// Check if client ID matches the receiver ID
+		if id == msg.ReceiverID {
+			// Write to client msg as JSON
+			err := client.WriteJSON(msg)
+			if err != nil {
+				fmt.Printf("Error sending message to client: %v\n", err)
+				client.Close()
+				delete(clients, client)
+			}
+		}
+	}
+}
+
+func broadcaster() {
+	for {
+		// Wait for message from broadcast channel
+		msg := <-broadcast
+
+		// Iterate through all connected clients (maybe not the best way to do this)
+		for client, userID := range clients {
+			// Send message only to intended receiver
+			if userID == msg.ReceiverID {
+				err := client.WriteJSON(msg)
+				if err != nil {
+					fmt.Printf("Error sending message to client: %v\n", err)
+					client.Close()
+					delete(clients, client)
+				}
+			}
+		}
 	}
 }
 
@@ -216,5 +329,12 @@ func main() {
 	r.POST("/login", loginUser)
 	r.POST("/logout", logoutUser)
 	r.GET("/me", getLoggedInUser)
+
+	r.GET("/ws", func(c *gin.Context) {
+		handleWebSocket(c.Writer, c.Request)
+	})
+
+	go broadcaster()
+
 	r.Run(":8080")
 }
