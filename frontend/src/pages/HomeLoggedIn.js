@@ -7,25 +7,24 @@ import UserProfileCard from '../components/UserProfileCard';
 
 function HomeLoggedIn() {
     const [userId, setUserId] = useState(null);
+    const [receiverId, setReceiverId] = useState(null); // Add receiverId state
 
     useEffect(() => {
-        axios.get("http://localhost:8080/me", { withCredentials: true }).then((response) => {
-            setUserId(response.data.user_id);
-        }).catch((err) => {
-            console.log("Error");
-        })
-    },[]);
-    
+        axios.get("http://localhost:8080/me", { withCredentials: true })
+            .then((response) => setUserId(response.data.user_id))
+            .catch(() => console.log("Error"));
+    }, []);
+
     return (
         <div className='main-page'>
             <div className='container'>
                 <div className='users-window'>
                     <UserProfileCard />
-                    <UserList />
+                    <UserList setReceiverId={setReceiverId} /> {/* Pass setReceiverId */}
                 </div>
                 <div className='message-window'>
                     <h1>Person</h1>
-                    <MessagingBox userId={userId}/>
+                    <MessagingBox userId={userId} receiverId={receiverId} /> {/* Pass receiverId */}
                 </div>
             </div>
         </div>

@@ -326,6 +326,35 @@ func registerUser(c *gin.Context) {
 	)
 }
 
+type User struct {
+	ID             int    `json:"id"`
+	Name           string `json:"name"`
+	ProfilePicture string `json:"profile_picture"`
+}
+
+func getUsers(c *gin.Context) {
+	rows, err := db.Query("SELECT id, username FROM users")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users."})
+		return
+	}
+	defer rows.Close()
+
+	var users []User
+	for rows.Next() {
+		var user User
+		err := rows.Scan(&user.ID, &user.Name)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error scanning user data."})
+			return
+		}
+		user.ProfilePicture = "/static/images/pfptemp.jpg"
+		users = append(users, user)
+	}
+
+	c.JSON(http.StatusOK, users)
+}
+
 func main() {
 	// Connect to DB
 	initDB()
@@ -345,6 +374,9 @@ func main() {
 	r.POST("/login", loginUser)
 	r.POST("/logout", logoutUser)
 	r.GET("/me", getLoggedInUser)
+	r.GET("/users", getUsers)
+
+	r.Static("/static", "./frontend/public")
 
 	r.GET("/ws", func(c *gin.Context) {
 		handleWebSocket(c.Writer, c.Request)
