@@ -7,28 +7,40 @@ import UserProfileCard from '../components/UserProfileCard';
 
 function HomeLoggedIn() {
     const [userId, setUserId] = useState(null);
-    const [receiverId, setReceiverId] = useState(null); // Add receiverId state
+    const [receiverId, setReceiverId] = useState(null);
 
     useEffect(() => {
-        axios.get("http://localhost:8080/me", { withCredentials: true })
-            .then((response) => setUserId(response.data.user_id))
-            .catch(() => console.log("Error"));
+        axios
+            .get("http://localhost:8080/me", { withCredentials: true })
+            .then((response) => {
+                console.log("Fetched userId:", response.data.user_id); // Debug
+                setUserId(response.data.user_id);
+            })
+            .catch((err) => console.error("Error fetching user ID:", err));
     }, []);
+    
+    
+
+    console.log("userId:", userId, "receiverId:", receiverId); // Debug
 
     return (
-        <div className='main-page'>
-            <div className='container'>
-                <div className='users-window'>
+        <div className="main-page">
+            <div className="container">
+                <div className="users-window">
                     <UserProfileCard />
-                    <UserList setReceiverId={setReceiverId} /> {/* Pass setReceiverId */}
+                    <UserList setReceiverId={setReceiverId} />
                 </div>
-                <div className='message-window'>
-                    <h1>Person</h1>
-                    <MessagingBox userId={userId} receiverId={receiverId} /> {/* Pass receiverId */}
+                <div className="message-window">
+                    {userId && receiverId ? (
+                        <MessagingBox userId={userId} receiverId={receiverId} />
+                    ) : (
+                        <p>Select a user to start messaging</p>
+                    )}
                 </div>
             </div>
         </div>
     );
 }
+
 
 export default HomeLoggedIn;

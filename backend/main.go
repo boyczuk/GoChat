@@ -156,36 +156,32 @@ func broadcaster() {
 }
 
 func getLoggedInUser(c *gin.Context) {
-	// get token from cookies
+	// Retrieve the session token from the cookie
 	sessionToken, err := c.Cookie("session_token")
 	if err != nil {
-		c.JSON(http.StatusUnauthorized,
-			gin.H{"error": "You are not logged in."},
-		)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Not logged in"})
 		return
 	}
 
 	var userID int
-
-	// Check user_id associated with sessionToken
-	err = db.QueryRow(
-		"SELECT user_id FROM sessions WHERE session_token = $1", sessionToken,
-	).Scan(&userID)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid session or session expired."})
-		return
-	}
-
 	var username string
+
+	// Fetch the user ID and username associated with the session token
 	err = db.QueryRow(
-		"SELECT username FROM users WHERE id = $1", userID,
-	).Scan(&username)
+		"SELECT users.id, users.username FROM sessions JOIN users ON sessions.user_id = users.id WHERE session_token = $1",
+		sessionToken,
+	).Scan(&userID, &username)
+
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retreive uer info."})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid session"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"username": username})
+	// Return both the user ID and username
+	c.JSON(http.StatusOK, gin.H{
+		"user_id":  userID,
+		"username": username,
+	})
 }
 
 func logoutUser(c *gin.Context) {
@@ -355,6 +351,62 @@ func getUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 
+func saveMessage(c *gin.Context) {
+	var msg Message
+	if err := c.BindJSON(&msg); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	_, err := db.Exec(
+		"INSERT INTO messages (sender_id, receiver_id, content, timestamp) VALUES ($1, $2, $3, $4)",
+		msg.SenderID, msg.ReceiverID, msg.Content, msg.Timestamp,
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save message"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Message saved successfully"})
+}
+
+func getChatHistory(c *gin.Context) {
+	senderID := c.Query("sender_id")
+	receiverID := c.Query("receiver_id")
+
+	if senderID == "" || receiverID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing sender_id or receiver_id"})
+		return
+	}
+
+	rows, err := db.Query(`
+        SELECT sender_id, receiver_id, content, timestamp 
+        FROM messages 
+        WHERE (sender_id = $1 AND receiver_id = $2) OR (sender_id = $2 AND receiver_id = $1)
+        ORDER BY timestamp ASC
+    `, senderID, receiverID)
+
+	if err != nil {
+		fmt.Printf("Error fetching chat history: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch chat history"})
+		return
+	}
+	defer rows.Close()
+
+	var messages []Message
+	for rows.Next() {
+		var msg Message
+		if err := rows.Scan(&msg.SenderID, &msg.ReceiverID, &msg.Content, &msg.Timestamp); err != nil {
+			fmt.Printf("Error scanning message data: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error scanning message data"})
+			return
+		}
+		messages = append(messages, msg)
+	}
+
+	c.JSON(http.StatusOK, messages)
+}
+
 func main() {
 	// Connect to DB
 	initDB()
@@ -375,6 +427,8 @@ func main() {
 	r.POST("/logout", logoutUser)
 	r.GET("/me", getLoggedInUser)
 	r.GET("/users", getUsers)
+	r.POST("/messages", saveMessage)
+	r.GET("/messages", getChatHistory)
 
 	r.Static("/static", "./frontend/public")
 

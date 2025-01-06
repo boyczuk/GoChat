@@ -13,9 +13,11 @@ function UserList({ setReceiverId }) {
     }, []);
 
     const handleUserClick = (userId) => {
-        setSelectedUserId(userId);
-        setReceiverId(userId);
+        console.log("User selected:", userId); // Debug
+        setSelectedUserId(userId); // Highlight the selected user
+        setReceiverId(userId); // Notify parent component
     };
+    
 
     return (
         <div className="user-list">

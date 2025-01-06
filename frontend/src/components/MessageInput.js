@@ -12,14 +12,25 @@ function MessageInput({ socket, senderId, receiverId }) {
         if (socket && inputValue.trim() !== "" && receiverId) {
             const message = {
                 sender_id: senderId,
-                receiver_id: receiverId, // Send to dynamically selected recipient
+                receiver_id: receiverId,
                 content: inputValue,
+                timestamp: new Date().toISOString(), // Add timestamp for backend
             };
-
+    
+            // Send message via WebSocket
             socket.send(JSON.stringify(message));
+    
+            // Save message in the database
+            fetch("http://localhost:8080/messages", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(message),
+            }).catch((error) => console.error("Error saving message:", error));
+    
             setInputValue(""); // Clear the input
         }
     };
+    
 
     const handleKeyDown = (event) => {
         if (event.key === "Enter") {

@@ -9,7 +9,7 @@
 
 .sent-messages {
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column; /* Normal column direction */
     overflow-y: auto;
     height: 90%;
     background-color: #f9f9f9;

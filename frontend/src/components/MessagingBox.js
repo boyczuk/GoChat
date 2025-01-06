@@ -1,6 +1,6 @@
-import { useRef, useEffect, useState } from 'react';
-import MessageInput from './MessageInput';
-import './styles/MessagingBox.css';
+import { useRef, useEffect, useState } from "react";
+import MessageInput from "./MessageInput";
+import "./styles/MessagingBox.css";
 
 function MessagingBox({ userId, receiverId }) {
     const messagesEndRef = useRef(null);
@@ -13,31 +13,60 @@ function MessagingBox({ userId, receiverId }) {
 
         ws.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            setMessageHistory((prevHistory) => [message, ...prevHistory]);
+            setMessageHistory((prevHistory) => [...prevHistory, message]);
         };
 
         return () => ws.close();
     }, []);
 
     useEffect(() => {
+        if (receiverId) {
+            fetch(`http://localhost:8080/messages?sender_id=${userId}&receiver_id=${receiverId}`)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    if (Array.isArray(data)) {
+                        const sortedData = data.sort(
+                            (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+                        );
+                        setMessageHistory(sortedData);
+                    } else {
+                        console.error("Unexpected response:", data);
+                        setMessageHistory([]);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching chat history:", error);
+                    setMessageHistory([]);
+                });
+        }
+    }, [receiverId]);
+
+    useEffect(() => {
         if (messagesEndRef.current) {
-            messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [messageHistory]);
 
     return (
         <div className="messaging-box">
-            <div className="sent-messages" ref={messagesEndRef}>
-                {messageHistory.slice().map((message, index) => (
+            <div className="sent-messages">
+                {messageHistory.map((message, index) => (
                     <p
                         key={index}
                         className={message.sender_id === userId ? "right-aligned" : "left-aligned"}
                     >
-                        {`${message.sender_id === userId ? "You" : `User ${message.sender_id}`}: ${message.content}`}
+                        {`${message.sender_id === userId ? "You" : `User ${message.sender_id}`}: ${
+                            message.content
+                        }`}
                     </p>
                 ))}
+                <div ref={messagesEndRef} /> {/* Add the ref at the bottom */}
             </div>
-
             <MessageInput socket={socket} senderId={userId} receiverId={receiverId} />
         </div>
     );
