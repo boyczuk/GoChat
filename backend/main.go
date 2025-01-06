@@ -29,7 +29,7 @@ var clients = make(map[*websocket.Conn]int)
 var broadcast = make(chan Message)
 
 type Message struct {
-	SenderID   int    `json:"sender_d"`
+	SenderID   int    `json:"sender_id"`
 	ReceiverID int    `json:"receiver_id"`
 	Content    string `json:"content"`
 	Timestamp  string `json:"timestamp"`
@@ -55,23 +55,26 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	userID := r.URL.Query().Get("user_id")
-	if userID == "" {
-		// send this string to connection
-		conn.WriteMessage(websocket.CloseMessage, []byte("User ID required"))
+	// Get session token from cookies
+	sessionToken, err := r.Cookie("session_token")
+	if err != nil {
+		conn.WriteMessage(websocket.CloseMessage, []byte("Unauthorized: No session token"))
 		return
 	}
 
-	var userIDInt int
-	_, err = fmt.Sscanf(userID, "%d", &userIDInt)
+	// Retrieve the user Id assocaited with session token
+	var userID int
+	err = db.QueryRow(
+		"SELECT user_id FROM sessions WHERE session_token = $1", sessionToken.Value,
+	).Scan(&userID)
 	if err != nil {
-		conn.WriteMessage(websocket.CloseMessage, []byte("Invalid User ID"))
+		conn.WriteMessage(websocket.CloseMessage, []byte("Unauthorized: Invalid session"))
 		return
 	}
 
 	// Add the connection to the clients map
-	clients[conn] = userIDInt
-	fmt.Printf("User connected: %d\n", userIDInt)
+	clients[conn] = userID
+	fmt.Printf("User connected: %d\n", userID)
 
 	// Wait for messages from client
 	for {
@@ -85,7 +88,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Add sender id to message
-		msg.SenderID = userIDInt
+		msg.SenderID = userID
 		msg.Timestamp = time.Now().Format("2006-01-02 15:04:05")
 		// Save the message to DB
 		saveMessageToDB(msg)
@@ -106,14 +109,27 @@ func saveMessageToDB(msg Message) {
 
 func sendMessageToReceiver(msg Message) {
 	for client, id := range clients {
-		// Check if client ID matches the receiver ID
 		if id == msg.ReceiverID {
-			// Write to client msg as JSON
+			// Send to Receiver
 			err := client.WriteJSON(msg)
 			if err != nil {
-				fmt.Printf("Error sending message to client: %v\n", err)
+				fmt.Printf("Error sending to receiver (User %d): %v\n", msg.ReceiverID, err)
 				client.Close()
 				delete(clients, client)
+			} else {
+				fmt.Printf("Message sent to receiver (User %d).\n", msg.ReceiverID)
+			}
+		}
+
+		if id == msg.SenderID {
+			// Send back to Sender
+			err := client.WriteJSON(msg)
+			if err != nil {
+				fmt.Printf("Error sending to sender (User %d): %v\n", msg.SenderID, err)
+				client.Close()
+				delete(clients, client)
+			} else {
+				fmt.Printf("Message sent to sender (User %d).\n", msg.SenderID)
 			}
 		}
 	}
