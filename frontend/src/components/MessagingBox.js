@@ -61,6 +61,7 @@ function MessagingBox({ userId, receiverId }) {
                 {messageHistory
                     .filter(
                         // Filters messages to ensure correct user messages are recieved
+                        // Do something smarter later
                         (message) =>
                             (message.sender_id === userId && message.receiver_id === receiverId) ||
                             (message.sender_id === receiverId && message.receiver_id === userId)
