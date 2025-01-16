@@ -13,8 +13,11 @@ function MessagingBox({ userId, receiverId }) {
 
         ws.onmessage = (event) => {
             const message = JSON.parse(event.data);
+            console.log("Incoming WebSocket message:", message); // Debug
+
             setMessageHistory((prevHistory) => [...prevHistory, message]);
         };
+
 
         return () => ws.close();
     }, []);
@@ -55,17 +58,23 @@ function MessagingBox({ userId, receiverId }) {
     return (
         <div className="messaging-box">
             <div className="sent-messages">
-                {messageHistory.map((message, index) => (
-                    <p
-                        key={index}
-                        className={message.sender_id === userId ? "right-aligned" : "left-aligned"}
-                    >
-                        {`${message.sender_id === userId ? "You" : `User ${message.sender_id}`}: ${
-                            message.content
-                        }`}
-                    </p>
-                ))}
-                <div ref={messagesEndRef} /> {/* Add the ref at the bottom */}
+                {messageHistory
+                    .filter(
+                        // Filters messages to ensure correct user messages are recieved
+                        (message) =>
+                            (message.sender_id === userId && message.receiver_id === receiverId) ||
+                            (message.sender_id === receiverId && message.receiver_id === userId)
+                    )
+                    .map((message, index) => (
+                        <p
+                            key={index}
+                            className={message.sender_id === userId ? "right-aligned" : "left-aligned"}
+                        >
+                            {`${message.sender_id === userId ? "You" : `User ${message.sender_id}`}: ${message.content
+                                }`}
+                        </p>
+                    ))}
+                <div ref={messagesEndRef} />
             </div>
             <MessageInput socket={socket} senderId={userId} receiverId={receiverId} />
         </div>

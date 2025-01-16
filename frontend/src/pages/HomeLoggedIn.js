@@ -18,6 +18,11 @@ function HomeLoggedIn() {
             })
             .catch((err) => console.error("Error fetching user ID:", err));
     }, []);
+
+    useEffect(() => {
+        console.log("Updated userId:", userId, "Updated receiverId:", receiverId); // Debug
+    }, [userId, receiverId]);
+    
     
     
 
