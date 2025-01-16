@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import pfptemp from './images/pfptemp.jpg';
 import './styles/UserList.css';
 
 function UserList({ setReceiverId }) {
@@ -45,7 +46,7 @@ function UserList({ setReceiverId }) {
                             className={user.id === selectedUserId ? "selected-user" : ""}
                         >
                             <img
-                                src={user.profilePicture}
+                                src={pfptemp}
                                 alt={`${user.name}'s profile`}
                                 width="50"
                                 height="50"
