@@ -1,15 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import Profile from "./pages/Profile";
 import LogoutPopup from "./components/LogoutPopup";
 import HomeLoggedIn from "./pages/HomeLoggedIn";
 import HomeLoggedOut from "./pages/HomeLoggedOut";
 import "./App.css";
+import axios from "axios";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [currentPage, setCurrentPage] = useState("messages");
     const [isPopupOpen, setPopupOpen] = useState(false);
+
+    useEffect(() => {
+        // Call to get credentials, if logged in load regular page, if not go to login page
+        axios
+            .get("http://localhost:8080/me", { withCredentials: true })
+            .then((response) => {
+                console.log("User session active:", response.data);
+                setIsLoggedIn(true);
+            })
+            .catch((err) => {
+                console.error("No active session:", err);
+                setIsLoggedIn(false);
+            })
+    }, []);
 
     const handleLogout = () => {
         setIsLoggedIn(false);
