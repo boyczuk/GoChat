@@ -1,8 +1,14 @@
 .navbar {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     margin: 1%;
+}
+
+.nav-logo {
+    height: 50px;
+    width: auto;
+    margin-right: auto;
 }
 
 .nav-item {
@@ -11,17 +17,9 @@
     background: none;
     border: none;
     padding: 0;
-    color: black;
     cursor: pointer;
-    transition: color 0.3s ease;
-    -webkit-tap-highlight-color: transparent;
 }
 
 .nav-item:hover {
-    color: #555;
-    text-decoration: underline;
-}
-
-.nav-item:focus {
-    outline: none;
+    background-color: white;
 }
