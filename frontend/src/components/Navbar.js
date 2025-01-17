@@ -1,6 +1,6 @@
 import React from "react";
 import "./styles/Navbar.css";
-import logo from './images/pfptemp.jpg';
+import logo from './images/Logo.png';
 
 function Navbar({ setCurrentPage }) {
     return (
