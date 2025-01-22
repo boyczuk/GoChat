@@ -407,6 +407,40 @@ func getChatHistory(c *gin.Context) {
 	c.JSON(http.StatusOK, messages)
 }
 
+func updateUsername(c *gin.Context) {
+	sessionToken, err := c.Cookie("session_token")
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized."})
+		return
+	}
+
+	var userID int
+	err = db.QueryRow(
+		"SELECT user_id FROM sessions WHERE session_token = $1",
+		sessionToken,
+	).Scan(&userID)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid session"})
+		return
+	}
+
+	var req struct {
+		Username string `json:"username"`
+	}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	_, err = db.Exec("UPDATE users SET username = $1 WHERE id = $2", req.Username, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update username"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Username updated"})
+}
+
 func main() {
 	// Connect to DB
 	initDB()
@@ -429,6 +463,7 @@ func main() {
 	r.GET("/users", getUsers)
 	r.POST("/messages", saveMessage)
 	r.GET("/messages", getChatHistory)
+	r.POST("/update-username", updateUsername)
 
 	r.Static("/static", "./frontend/public")
 
