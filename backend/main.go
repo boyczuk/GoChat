@@ -2,7 +2,9 @@ package main
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -155,8 +157,8 @@ func broadcaster() {
 	}
 }
 
+// Inside getLoggedInUser
 func getLoggedInUser(c *gin.Context) {
-	// Retrieve the session token from the cookie
 	sessionToken, err := c.Cookie("session_token")
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Not logged in"})
@@ -164,23 +166,31 @@ func getLoggedInUser(c *gin.Context) {
 	}
 
 	var userID int
-	var username string
+	var username, bio string
+	var profilePicture []byte
 
-	// Fetch the user ID and username associated with the session token
+	// Fetch user details, including the profile picture
 	err = db.QueryRow(
-		"SELECT users.id, users.username FROM sessions JOIN users ON sessions.user_id = users.id WHERE session_token = $1",
+		"SELECT users.id, users.username, users.bio, users.profile_picture FROM sessions JOIN users ON sessions.user_id = users.id WHERE session_token = $1",
 		sessionToken,
-	).Scan(&userID, &username)
+	).Scan(&userID, &username, &bio, &profilePicture)
 
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid session"})
 		return
 	}
 
-	// Return both the user ID and username
+	var encodedProfilePicture string
+	if profilePicture != nil {
+		encodedProfilePicture = base64.StdEncoding.EncodeToString(profilePicture)
+	}
+
+	// Send data to the client
 	c.JSON(http.StatusOK, gin.H{
-		"user_id":  userID,
-		"username": username,
+		"user_id":         userID,
+		"username":        username,
+		"bio":             bio,
+		"profile_picture": encodedProfilePicture, // Base64 encoded string
 	})
 }
 
@@ -441,6 +451,82 @@ func updateUsername(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Username updated"})
 }
 
+func updateBio(c *gin.Context) {
+	sessionToken, err := c.Cookie("session_token")
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var userID int
+	err = db.QueryRow(
+		"SELECT user_id FROM sessions WHERE session_token = $1",
+		sessionToken,
+	).Scan(&userID)
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invaid session"})
+		return
+	}
+
+	var req struct {
+		Bio string `json:"bio"`
+	}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	_, err = db.Exec("UPDATE users SET bio = $1 WHERE id = $2", req.Bio, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update bio"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "bio updated"})
+
+}
+
+func updateProfilePicture(c *gin.Context) {
+	sessionToken, err := c.Cookie("session_token")
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	var userID int
+	err = db.QueryRow(
+		"SELECT user_id FROM sessions WHERE session_token = $1",
+		sessionToken,
+	).Scan(&userID)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid session"})
+		return
+	}
+
+	file, _, err := c.Request.FormFile("profile_picture")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse file"})
+		return
+	}
+	defer file.Close()
+
+	imageData, err := io.ReadAll(file)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to read file"})
+		return
+	}
+
+	_, err = db.Exec("UPDATE users SET profile_picture = $1 WHERE id = $2", imageData, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update profile picture"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Profile picture updated successfully"})
+
+}
+
 func main() {
 	// Connect to DB
 	initDB()
@@ -464,6 +550,8 @@ func main() {
 	r.POST("/messages", saveMessage)
 	r.GET("/messages", getChatHistory)
 	r.POST("/update-username", updateUsername)
+	r.POST("/update-bio", updateBio)
+	r.POST("/update-profile-picture", updateProfilePicture)
 
 	r.Static("/static", "./frontend/public")
 
