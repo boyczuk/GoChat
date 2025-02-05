@@ -41,3 +41,51 @@
     display: inline-block;
     vertical-align: middle;
 }
+
+@media (max-width: 768px) {
+    .user-list {
+        overflow-x: auto; /* Enable horizontal scrolling */
+        white-space: nowrap; /* Prevent line breaks */
+        display: flex;
+        flex-direction: row;
+        padding: 10px;
+        border: none; /* Remove border */
+        box-shadow: none; /* Remove box shadow */
+        background: transparent; /* Remove background */
+    }
+
+    .user-list ul {
+        display: flex;
+        flex-direction: row; /* Make it a row layout */
+        gap: 10px; /* Spacing between users */
+        padding: 0;
+        margin: 0;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .user-list li {
+        flex: 0 0 auto; /* Ensure items don't shrink */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 100px; /* Ensure a minimum width per item */
+        padding: 10px;
+        border: 2px solid black;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .user-list img {
+        width: 40px; /* Adjust profile pic size */
+        height: 40px;
+        margin-right: 5px;
+    }
+
+    .user-list p {
+        font-size: 14px;
+    }
+}

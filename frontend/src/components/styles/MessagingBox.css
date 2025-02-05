@@ -1,7 +1,7 @@
 .messaging-box {
     border: 2px solid black;
     border-radius: 10px;
-    height: 78vh;
+    height: 68vh;
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -9,7 +9,7 @@
 
 .sent-messages {
     display: flex;
-    flex-direction: column; /* Normal column direction */
+    flex-direction: column;
     overflow-y: auto;
     height: 90%;
     background-color: #f9f9f9;

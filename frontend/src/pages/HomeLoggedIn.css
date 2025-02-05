@@ -11,23 +11,13 @@
 .message-window {
     flex: 4;
     padding: 10px;
-    border: 1px solid #000000;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
     height: 100%;
-    overflow: auto;
 }
 
 .users-window {
-    flex: 1;
+    flex: none;
+    height: auto;
     padding: 10px;
-    border: 1px solid #000000;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-    height: 100%;
-    overflow: auto;
 }
 
 .message-window p {

@@ -32,7 +32,7 @@ function HomeLoggedIn() {
         <div className="main-page">
             <div className="container">
                 <div className="users-window">
-                    <UserProfileCard />
+                    {/* <UserProfileCard /> */}
                     <UserList setReceiverId={setReceiverId} />
                 </div>
                 <div className="message-window">
