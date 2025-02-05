@@ -1,7 +1,7 @@
 .messaging-box {
     border: 2px solid black;
     border-radius: 10px;
-    height: 68vh;
+    height: 78vh;
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -33,4 +33,11 @@
     border-radius: 10px;
     margin: 5px 0;
     max-width: 60%;
+}
+
+@media (max-width: 844px) {
+    .messaging-box {
+        height: 68vh;
+    }
+
 }

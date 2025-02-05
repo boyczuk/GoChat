@@ -1,25 +1,45 @@
 .navbar {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* Center navbar items */
     align-items: center;
-    margin: 1%;
+    padding: 10px;
+    width: 100%;
+    background-color: #fff;
 }
 
+/* Adjust logo placement */
 .nav-logo {
     height: 70px;
     width: auto;
-    margin-right: auto;
+    margin-right: auto; /* Ensures it aligns properly */
 }
 
+/* Keep buttons aligned */
 .nav-item {
-    margin-left: 5%;
+    margin: 10px; /* Reduce spacing */
     font-size: 25px;
     background: none;
     border: none;
     padding: 0;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
+/* Prevents unwanted hover effects */
 .nav-item:hover {
-    background-color: white;
+    background: none;
+}
+
+/* Mobile: Hide text but keep icons */
+@media (max-width: 844px) {
+    .nav-item span {
+        display: none;
+    }
+
+    .nav-item svg {
+        width: 28px;
+        height: 28px;
+    }
 }
