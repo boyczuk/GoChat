@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { FaCamera } from "react-icons/fa";
 import pfp from "../components/images/pfptemp.jpg";
 import "./Profile.css";
 
@@ -16,7 +17,6 @@ function Profile() {
             .get("http://localhost:8080/me", { withCredentials: true })
             .then((response) => {
                 const { username, bio, profile_picture } = response.data;
-    
                 setUsername(username || "Loading...");
                 setBio(bio || "Hey there!");
                 setProfilePicture(
@@ -25,16 +25,10 @@ function Profile() {
             })
             .catch((error) => console.error("Error fetching user info:", error));
     }, []);
-    
-    
 
     const handleSaveUsername = () => {
         axios
-            .post(
-                "http://localhost:8080/update-username",
-                { username: newUsername },
-                { withCredentials: true }
-            )
+            .post("http://localhost:8080/update-username", { username: newUsername }, { withCredentials: true })
             .then(() => {
                 setUsername(newUsername);
                 setIsEditingUsername(false);
@@ -46,11 +40,7 @@ function Profile() {
 
     const handleSaveBio = () => {
         axios
-            .post(
-                "http://localhost:8080/update-bio",
-                { bio },
-                { withCredentials: true }
-            )
+            .post("http://localhost:8080/update-bio", { bio }, { withCredentials: true })
             .then(() => {
                 setSuccessMessage("Bio updated successfully!");
                 setTimeout(() => setSuccessMessage(""), 3000);
@@ -78,9 +68,12 @@ function Profile() {
     return (
         <div className="profile-container">
             <div className="profile-header">
-                <div className="profile-picture">
+                <label className="profile-picture">
                     <img src={profilePicture} alt="Profile" />
-                </div>
+                    <FaCamera className="upload-icon" />
+                    <input type="file" accept="image/*" onChange={handleProfilePictureChange} />
+                </label>
+
                 <h1 className="profile-name">
                     {isEditingUsername ? (
                         <div>
@@ -108,6 +101,7 @@ function Profile() {
                 <p className="profile-username">@{username}</p>
                 {successMessage && <p className="success-message">{successMessage}</p>}
             </div>
+
             <div className="profile-details">
                 <div className="detail-item">
                     <p className="detail-label">Bio:</p>
@@ -119,10 +113,6 @@ function Profile() {
                     <button onClick={handleSaveBio}>Save Bio</button>
                 </div>
 
-                <div className="detail-item">
-                    <p className="detail-label">Profile Picture:</p>
-                    <input type="file" accept="image/*" onChange={handleProfilePictureChange} />
-                </div>
                 <div className="detail-item">
                     <p className="detail-label">Joined:</p>
                     <p className="detail-value">January 2025</p>
