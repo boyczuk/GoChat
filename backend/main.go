@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -38,13 +40,67 @@ type Message struct {
 }
 
 func initDB() {
-	var err error
-	db, err = sql.Open(
-		"postgres",
-		"host=localhost user=postgres password=temppassword dbname=chat_app sslmode=disable",
-	)
+	err := godotenv.Load() // Ensure .env is loaded
 	if err != nil {
-		panic(err)
+		fmt.Println("⚠️ Warning: No .env file found. Using system environment variables.")
+	}
+
+	dbUser := os.Getenv("POSTGRES_USER")
+	dbPassword := os.Getenv("POSTGRES_PASSWORD")
+	dbName := os.Getenv("POSTGRES_DB")
+
+	dsn := fmt.Sprintf("host=db user=%s password=%s dbname=%s sslmode=disable", dbUser, dbPassword, dbName)
+
+	// Retry loop to wait for database to be ready
+	var dbErr error
+	for i := 0; i < 10; i++ {
+		db, dbErr = sql.Open("postgres", dsn)
+		if dbErr == nil {
+			break
+		}
+		fmt.Println("🔄 Waiting for database to be ready...")
+		time.Sleep(5 * time.Second)
+	}
+
+	if dbErr != nil {
+		panic("❌ Could not connect to database after multiple attempts")
+	}
+
+	fmt.Println("✅ Database connected successfully")
+
+	// Automatically create tables if they don't exist
+	createTables()
+}
+
+func createTables() {
+	_, err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS users (
+			id SERIAL PRIMARY KEY,
+			username VARCHAR(255) UNIQUE NOT NULL,
+			password_hash TEXT NOT NULL,
+			bio TEXT DEFAULT '',
+			profile_picture BYTEA
+		);
+		
+		CREATE TABLE IF NOT EXISTS sessions (
+			id SERIAL PRIMARY KEY,
+			user_id INT REFERENCES users(id) ON DELETE CASCADE,
+			session_token TEXT UNIQUE NOT NULL,
+			expires_at TIMESTAMP NOT NULL
+		);
+
+		CREATE TABLE IF NOT EXISTS messages (
+			id SERIAL PRIMARY KEY,
+			sender_id INT REFERENCES users(id) ON DELETE CASCADE,
+			receiver_id INT REFERENCES users(id) ON DELETE CASCADE,
+			content TEXT NOT NULL,
+			timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		);
+	`)
+	if err != nil {
+		panic("Failed to create tables: " + err.Error())
+	} else {
+		fmt.Println("✅ Database tables ensured.")
 	}
 }
 
@@ -161,36 +217,40 @@ func broadcaster() {
 func getLoggedInUser(c *gin.Context) {
 	sessionToken, err := c.Cookie("session_token")
 	if err != nil {
+		fmt.Println("❌ No session token found in request")
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Not logged in"})
 		return
 	}
+
+	fmt.Println("✅ Session token received")
 
 	var userID int
 	var username, bio string
 	var profilePicture []byte
 
-	// Fetch user details, including the profile picture
 	err = db.QueryRow(
 		"SELECT users.id, users.username, users.bio, users.profile_picture FROM sessions JOIN users ON sessions.user_id = users.id WHERE session_token = $1",
 		sessionToken,
 	).Scan(&userID, &username, &bio, &profilePicture)
 
 	if err != nil {
+		fmt.Println("❌ Error retrieving user from session:", err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid session"})
 		return
 	}
+
+	fmt.Println("✅ User authenticated:", userID)
 
 	var encodedProfilePicture string
 	if profilePicture != nil {
 		encodedProfilePicture = base64.StdEncoding.EncodeToString(profilePicture)
 	}
 
-	// Send data to the client
 	c.JSON(http.StatusOK, gin.H{
 		"user_id":         userID,
 		"username":        username,
 		"bio":             bio,
-		"profile_picture": encodedProfilePicture, // Base64 encoded string
+		"profile_picture": encodedProfilePicture,
 	})
 }
 
@@ -225,65 +285,41 @@ func loginUser(c *gin.Context) {
 	}
 
 	if err := c.BindJSON(&req); err != nil {
-		c.JSON(
-			http.StatusBadRequest,
-			gin.H{"error": "Invalid input."},
-		)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input."})
 		return
 	}
 
 	var dbPasswordHash string
 	var userID int
 
-	err := db.QueryRow(
-		"SELECT id, password_hash FROM users WHERE username = $1", req.Username,
-	).Scan(&userID, &dbPasswordHash)
-
+	err := db.QueryRow("SELECT id, password_hash FROM users WHERE username = $1", req.Username).Scan(&userID, &dbPasswordHash)
 	if err != nil {
-		c.JSON(
-			http.StatusInternalServerError,
-			gin.H{"error": "Invalid username or password."},
-		)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid username or password."})
 		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(dbPasswordHash), []byte(req.Password))
 	if err != nil {
-		c.JSON(
-			http.StatusUnauthorized,
-			gin.H{"error": "Invalid username or password."},
-		)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password."})
 		return
 	}
 
-	// Random string that acts as session token
+	// Generate a random session token
 	sessionToken := uuid.New().String()
-
-	// 24 hours from now it expires
 	expiresAt := time.Now().Add(24 * time.Hour)
 
-	_, err = db.Exec(
-		"INSERT INTO sessions (user_id, session_token, expires_at) VALUES ($1, $2, $3)",
-		userID, sessionToken, expiresAt,
-	)
-
+	// Insert session into DB
+	_, err = db.Exec("INSERT INTO sessions (user_id, session_token, expires_at) VALUES ($1, $2, $3)", userID, sessionToken, expiresAt)
 	if err != nil {
-		c.JSON(
-			http.StatusInternalServerError,
-			gin.H{"error": "Failed to create session for user."},
-		)
+		fmt.Println("🚨 ERROR: Failed to insert session into DB:", err) // DEBUGGING LOG
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create session for user."})
 		return
 	}
 
-	c.SetCookie(
-		"session_token",
-		sessionToken,
-		3600*24,
-		"/",
-		"localhost",
-		false,
-		true,
-	)
+	fmt.Println("✅ Session created for User ID:", userID, "Token:", sessionToken) // DEBUGGING LOG
+
+	// Set the session cookie
+	c.SetCookie("session_token", sessionToken, 3600*24, "/", "", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful."})
 }
@@ -313,23 +349,37 @@ func registerUser(c *gin.Context) {
 		)
 		return
 	}
-	_, err = db.Exec(
-		"INSERT INTO users (username, password_hash) VALUES ($1, $2)",
+
+	// Creates user
+	var userID int
+	err = db.QueryRow(
+		"INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id",
 		req.Username,
 		hashedPassword,
-	)
+	).Scan(&userID)
+
 	if err != nil {
-		c.JSON(http.StatusConflict,
-			gin.H{"error": "User already exists."},
-		)
+		c.JSON(http.StatusConflict, gin.H{"error": "User already exists."})
 		return
 	}
 
-	// If no errors raised user successfully registered!
-	c.JSON(
-		http.StatusOK,
-		gin.H{"message": "User registered successfully!"},
+	sessionToken := uuid.New().String()
+	expiresAt := time.Now().Add(24 * time.Hour)
+
+	// Insert session into DB
+	_, err = db.Exec(
+		"INSERT INTO sessions (user_id, session_token, expires_at) VALUES ($1, $2, $3)",
+		userID, sessionToken, expiresAt,
 	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create session."})
+		return
+	}
+
+	c.SetCookie("session_token", sessionToken, 3600*24, "/", "localhost", false, true)
+
+	c.JSON(http.StatusOK, gin.H{"message": "User registered and logged in!"})
+
 }
 
 type User struct {
@@ -414,7 +464,12 @@ func getChatHistory(c *gin.Context) {
 		messages = append(messages, msg)
 	}
 
-	c.JSON(http.StatusOK, messages)
+	if len(messages) > 0 {
+		c.JSON(http.StatusOK, messages)
+	} else {
+		c.JSON(http.StatusOK, []Message{})
+	}
+
 }
 
 func updateUsername(c *gin.Context) {
@@ -534,6 +589,8 @@ func main() {
 	// Create gin middleware
 	r := gin.Default()
 
+	r.SetTrustedProxies(nil)
+
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
@@ -561,5 +618,5 @@ func main() {
 
 	go broadcaster()
 
-	r.Run(":8080")
+	r.Run("0.0.0.0:8080")
 }
