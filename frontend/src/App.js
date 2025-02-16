@@ -15,7 +15,7 @@ function App() {
     useEffect(() => {
         // Call to get credentials, if logged in load regular page, if not go to login page
         axios
-            .get("http://localhost:8080/me", { withCredentials: true })
+            .get("http://3.17.175.47:8080/me", { withCredentials: true })
             .then((response) => {
                 console.log("User session active:", response.data);
                 setIsLoggedIn(true);

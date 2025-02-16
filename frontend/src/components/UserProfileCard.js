@@ -8,7 +8,7 @@ function UserProfileCard() {
 
     useEffect(() => {
         // get request to /me
-        axios.get("http://localhost:8080/me", { withCredentials: true }).then((response) => {
+        axios.get("http://3.17.175.47:8080/me", { withCredentials: true }).then((response) => {
             setUsername(response.data.username);
         }).catch((error) => {
             if (error.response) {

@@ -19,7 +19,7 @@ function MessageInput({ socket, senderId, receiverId }) {
 
         if (socket && inputValue.trim() !== "" && receiverId) {
             socket.send(JSON.stringify(message));
-            fetch("http://localhost:8080/messages", {
+            fetch("http://3.17.175.47:8080/messages", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(message),

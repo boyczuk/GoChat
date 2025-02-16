@@ -5,7 +5,7 @@ import './styles/LogoutPopup.css';
 function LogoutPopup({ isOpen, onClose, onLogout }) {
     const handleLogout = () => {
         axios
-            .post("http://localhost:8080/logout", {}, { withCredentials: true })
+            .post("http://3.17.175.47:8080/logout", {}, { withCredentials: true })
             .then((response) => {
                 console.log(response.data.message);
                 onLogout();

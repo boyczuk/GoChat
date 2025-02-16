@@ -11,7 +11,7 @@ function UserList({ setReceiverId }) {
     useEffect(() => {
         // Fetch all users
         axios
-            .get("http://localhost:8080/users")
+            .get("http://3.17.175.47:8080/users")
             .then((response) => {
                 console.log("Fetched Users:", response.data);
                 setUsers(response.data);
@@ -19,7 +19,7 @@ function UserList({ setReceiverId }) {
             .catch((error) => console.error("Error fetching users:", error));
 
         axios
-            .get("http://localhost:8080/me", { withCredentials: true }) 
+            .get("http://3.17.175.47:8080/me", { withCredentials: true }) 
             .then((response) => {
                 console.log("Fetched myUserId:", response.data.user_id);
                 setMyUserId(response.data.user_id);

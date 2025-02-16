@@ -15,7 +15,7 @@ function RegisterForm({ onLoginSuccess }) {
 
         try {
             const response = await axios.post(
-                "http://localhost:8080/register",
+                "http://3.17.175.47:8080/register",
                 { username, password },
                 { withCredentials: true }
             );

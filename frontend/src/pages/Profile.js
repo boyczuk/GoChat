@@ -14,7 +14,7 @@ function Profile() {
 
     useEffect(() => {
         axios
-            .get("http://localhost:8080/me", { withCredentials: true })
+            .get("http://3.17.175.47:8080/me", { withCredentials: true })
             .then((response) => {
                 const { username, bio, profile_picture } = response.data;
                 setUsername(username || "Loading...");
@@ -28,7 +28,7 @@ function Profile() {
 
     const handleSaveUsername = () => {
         axios
-            .post("http://localhost:8080/update-username", { username: newUsername }, { withCredentials: true })
+            .post("http://3.17.175.47:8080/update-username", { username: newUsername }, { withCredentials: true })
             .then(() => {
                 setUsername(newUsername);
                 setIsEditingUsername(false);
@@ -40,7 +40,7 @@ function Profile() {
 
     const handleSaveBio = () => {
         axios
-            .post("http://localhost:8080/update-bio", { bio }, { withCredentials: true })
+            .post("http://3.17.175.47:8080/update-bio", { bio }, { withCredentials: true })
             .then(() => {
                 setSuccessMessage("Bio updated successfully!");
                 setTimeout(() => setSuccessMessage(""), 3000);
@@ -53,7 +53,7 @@ function Profile() {
         formData.append("profile_picture", event.target.files[0]);
 
         axios
-            .post("http://localhost:8080/update-profile-picture", formData, {
+            .post("http://3.17.175.47:8080/update-profile-picture", formData, {
                 withCredentials: true,
                 headers: { "Content-Type": "multipart/form-data" },
             })

@@ -13,7 +13,7 @@ function LoginForm({ onLoginSuccess }) {
 
         try {
             const response = await axios.post(
-                "http://localhost:8080/login",
+                "http://3.17.175.47:8080/login",
                 { username, password },
                 { withCredentials: true }
             );

@@ -273,7 +273,7 @@ func logoutUser(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("session_token", "", -1, "/", "localhost", false, true)
+	c.SetCookie("session_token", "", -1, "/", "3.17.175.47", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully."})
 }
@@ -319,7 +319,7 @@ func loginUser(c *gin.Context) {
 	fmt.Println("✅ Session created for User ID:", userID, "Token:", sessionToken) // DEBUGGING LOG
 
 	// Set the session cookie
-	c.SetCookie("session_token", sessionToken, 3600*24, "/", "", false, true)
+	c.SetCookie("session_token", sessionToken, 3600*24, "/", "3.17.175.47", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful."})
 }
@@ -376,7 +376,7 @@ func registerUser(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("session_token", sessionToken, 3600*24, "/", "localhost", false, true)
+	c.SetCookie("session_token", sessionToken, 3600*24, "/", "3.17.175.47", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "User registered and logged in!"})
 
@@ -573,7 +573,7 @@ func main() {
 	r.SetTrustedProxies(nil)
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowOrigins:     []string{"http://3.17.175.47:3000"},
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,

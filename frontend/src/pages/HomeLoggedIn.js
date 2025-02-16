@@ -11,7 +11,7 @@ function HomeLoggedIn() {
 
     useEffect(() => {
         axios
-            .get("http://localhost:8080/me", { withCredentials: true })
+            .get("http://3.17.175.47:8080/me", { withCredentials: true })
             .then((response) => {
                 console.log("Fetched userId:", response.data.user_id); // Debug
                 setUserId(response.data.user_id);

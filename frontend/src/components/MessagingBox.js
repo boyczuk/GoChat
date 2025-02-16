@@ -8,7 +8,7 @@ function MessagingBox({ userId, receiverId }) {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const ws = new WebSocket(`ws://localhost:8080/ws`);
+        const ws = new WebSocket(`ws://3.17.175.47:8080/ws`);
         setSocket(ws);
 
         ws.onmessage = (event) => {
@@ -39,7 +39,7 @@ function MessagingBox({ userId, receiverId }) {
 
     useEffect(() => {
         if (receiverId) {
-            fetch(`http://localhost:8080/messages?sender_id=${userId}&receiver_id=${receiverId}`)
+            fetch(`http://3.17.175.47:8080/messages?sender_id=${userId}&receiver_id=${receiverId}`)
                 .then((response) => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
