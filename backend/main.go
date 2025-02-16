@@ -40,7 +40,7 @@ type Message struct {
 }
 
 func initDB() {
-	err := godotenv.Load() // Ensure .env is loaded
+	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("⚠️ Warning: No .env file found. Using system environment variables.")
 	}

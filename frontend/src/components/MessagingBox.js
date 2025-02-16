@@ -52,7 +52,6 @@ function MessagingBox({ userId, receiverId }) {
                             (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
                         );
                         setMessageHistory((prevHistory) => {
-                            // Prevent duplicates when fetching API data
                             const uniqueMessages = sortedData.filter(
                                 (msg) =>
                                     !prevHistory.some(

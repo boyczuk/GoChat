@@ -10,7 +10,6 @@ function HomeLoggedOut({ onLoginSuccess }) {
         <div className="home-logged-out">
             <h1>Welcome to Adlai's Chat Application!</h1>
             <p>Connect with others using a secure and modern chat platform built with Go and React.</p>
-            {/* track whether login is successful */}
             
             {showLogin ? <LoginForm onLoginSuccess={onLoginSuccess} /> : <RegisterForm onLoginSuccess={onLoginSuccess} />}
             <button className='switch-button' onClick={() => setShowLogin(!showLogin)}>
