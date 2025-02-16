@@ -15,7 +15,22 @@ function MessagingBox({ userId, receiverId }) {
             const message = JSON.parse(event.data);
             console.log("Incoming WebSocket message:", message); // Debug
 
-            setMessageHistory((prevHistory) => [...prevHistory, message]);
+            setMessageHistory((prevHistory) => {
+                const messageExists = prevHistory.some(
+                    (msg) =>
+                        msg.sender_id === message.sender_id &&
+                        msg.receiver_id === message.receiver_id &&
+                        msg.content === message.content &&
+                        msg.timestamp === message.timestamp
+                );
+
+                if (!messageExists) {
+                    return [...prevHistory, message];
+                }
+
+                return prevHistory; // Avoid duplicate
+
+            });
         };
 
 
@@ -36,7 +51,21 @@ function MessagingBox({ userId, receiverId }) {
                         const sortedData = data.sort(
                             (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
                         );
-                        setMessageHistory(sortedData);
+                        setMessageHistory((prevHistory) => {
+                            // Prevent duplicates when fetching API data
+                            const uniqueMessages = sortedData.filter(
+                                (msg) =>
+                                    !prevHistory.some(
+                                        (prevMsg) =>
+                                            prevMsg.sender_id === msg.sender_id &&
+                                            prevMsg.receiver_id === msg.receiver_id &&
+                                            prevMsg.content === msg.content &&
+                                            prevMsg.timestamp === msg.timestamp
+                                    )
+                            );
+
+                            return [...prevHistory, ...uniqueMessages]; // Merge history
+                        });
                     } else {
                         console.error("Unexpected response:", data);
                         setMessageHistory([]);

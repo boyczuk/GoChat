@@ -411,25 +411,6 @@ func getUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 
-func saveMessage(c *gin.Context) {
-	var msg Message
-	if err := c.BindJSON(&msg); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-		return
-	}
-
-	_, err := db.Exec(
-		"INSERT INTO messages (sender_id, receiver_id, content, timestamp) VALUES ($1, $2, $3, $4)",
-		msg.SenderID, msg.ReceiverID, msg.Content, msg.Timestamp,
-	)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save message"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Message saved successfully"})
-}
-
 func getChatHistory(c *gin.Context) {
 	senderID := c.Query("sender_id")
 	receiverID := c.Query("receiver_id")
@@ -604,7 +585,6 @@ func main() {
 	r.POST("/logout", logoutUser)
 	r.GET("/me", getLoggedInUser)
 	r.GET("/users", getUsers)
-	r.POST("/messages", saveMessage)
 	r.GET("/messages", getChatHistory)
 	r.POST("/update-username", updateUsername)
 	r.POST("/update-bio", updateBio)
