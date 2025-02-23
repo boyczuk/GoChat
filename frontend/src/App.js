@@ -13,6 +13,7 @@ function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [currentPage, setCurrentPage] = useState("messages");
     const [isPopupOpen, setPopupOpen] = useState(false);
+    const [isUserPopupOpen, setIsUserPopupOpen] = useState(false);
 
     useEffect(() => {
         // Call to get credentials, if logged in load regular page, if not go to login page
@@ -47,10 +48,10 @@ function App() {
                         } else {
                             setCurrentPage(page);
                         }
-                    }} />
+                    }} setIsUserPopupOpen={setIsUserPopupOpen} />
 
                     {/* Render the selected page */}
-                    {currentPage === "messages" && <HomeLoggedIn />}
+                    {currentPage === "messages" && <HomeLoggedIn isUserPopupOpen={isUserPopupOpen} setIsUserPopupOpen={setIsUserPopupOpen} />}
                     {currentPage === "profile" && <Profile />}
                     <LogoutPopup isOpen={isPopupOpen} onClose={() => setPopupOpen(false)} onLogout={handleLogout} />
                 </div>

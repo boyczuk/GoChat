@@ -8,24 +8,81 @@
     margin: 0;
 }
 
+/* Message Window - Adjusts width when sidebar is open */
 .message-window {
     flex: 4;
     padding: 10px;
     height: 100%;
+    transition: margin-left 0.3s ease-in-out;
 }
 
+/* BACKDROP - Closes popup when clicked */
+.popup-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.3); /* Dark overlay */
+    z-index: 999; /* Behind the popup */
+    display: none; /* Hidden by default */
+}
+
+/* Show backdrop only when sidebar is open */
+.popup-backdrop.active {
+    display: block;
+}
+
+/* Users Sidebar (Popup) */
+.popup {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 30vw; /* Takes 30% of the screen instead of 50% */
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Hidden sidebar when closed */
+.popup.hidden {
+    transform: translateX(-100%);
+}
+
+/* Close button inside the popup */
+.popup .close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Ensure user window in the popup is scrollable */
 .users-window {
     flex: none;
     height: auto;
     padding: 10px;
+    overflow-y: auto;
 }
 
-.message-window p {
-    font-size: 25px;
-}
-
+/* Mobile View: Make popup full-screen */
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
+    }
+
+    .popup {
+        width: 40vw; /* Smaller screens use 70% width */
     }
 }

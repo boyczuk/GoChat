@@ -7,7 +7,7 @@ import UserProfileCard from '../components/UserProfileCard';
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
-function HomeLoggedIn() {
+function HomeLoggedIn({ isUserPopupOpen, setIsUserPopupOpen }) {
     const [userId, setUserId] = useState(null);
     const [receiverId, setReceiverId] = useState(null);
 
@@ -24,19 +24,25 @@ function HomeLoggedIn() {
     useEffect(() => {
         console.log("Updated userId:", userId, "Updated receiverId:", receiverId); // Debug
     }, [userId, receiverId]);
-    
-    
-    
 
-    console.log("userId:", userId, "receiverId:", receiverId); // Debug
+    const handleBackdropClick = (e) => {
+        if (e.target.classList.contains("popup-backdrop")) {
+            setIsUserPopupOpen(false);
+        }
+    };
 
     return (
         <div className="main-page">
             <div className="container">
-                <div className="users-window">
-                    {/* <UserProfileCard /> */}
-                    <UserList setReceiverId={setReceiverId} />
-                </div>
+                {isUserPopupOpen && (
+                    <>
+                        <div className="popup-backdrop active" onClick={handleBackdropClick}></div>
+                        <div className="popup">
+                            <UserList setReceiverId={setReceiverId} />
+                        </div>
+                    </>
+                )}
+
                 <div className="message-window">
                     {userId && receiverId ? (
                         <MessagingBox userId={userId} receiverId={receiverId} />

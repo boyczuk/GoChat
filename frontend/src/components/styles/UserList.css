@@ -1,12 +1,27 @@
+.user-list {
+    width: 100%; /* Ensures full width in sidebar */
+    max-height: 80vh; /* Prevents overflow */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column; /* Forces vertical layout */
+    align-items: center;
+    padding: 10px;
+    background-color: white;
+}
+
+/* Unordered list */
 .user-list ul {
     list-style: none;
     padding: 0;
     margin: 0;
+    width: 100%;
 }
 
+/* User List Items */
 .user-list li {
     display: flex;
     align-items: center;
+    width: 100%; /* Ensures full width */
     margin-bottom: 10px;
     border: 2px solid black;
     border-radius: 10px;
@@ -18,15 +33,16 @@
 }
 
 .user-list li:hover {
-    background-color: #f0f0f0; /* Slightly darker background on hover */
+    background-color: #f0f0f0;
 }
 
 .user-list li.selected-user {
-    background-color: #cce7ff; /* Light blue background */
-    border: 2px solid #007bff; /* Blue border */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Stronger shadow */
+    background-color: #cce7ff;
+    border: 2px solid #007bff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Profile Pictures */
 .user-list img {
     border-radius: 50%;
     margin-right: 10px;
@@ -34,6 +50,7 @@
     vertical-align: middle;
 }
 
+/* User Text */
 .user-list p {
     margin: 0;
     font-size: 16px;
@@ -42,34 +59,31 @@
     vertical-align: middle;
 }
 
+/* Mobile Responsive - Ensure user list remains usable */
 @media (max-width: 768px) {
     .user-list {
-        overflow-x: auto; /* Enable horizontal scrolling */
-        white-space: nowrap; /* Prevent line breaks */
+        max-height: 80vh; /* Adjust height as needed */
+        overflow-y: auto; /* Allows scrolling if content exceeds height */
         display: flex;
-        flex-direction: row;
-        padding: 10px;
-        border: none; /* Remove border */
-        box-shadow: none; /* Remove box shadow */
-        background: transparent; /* Remove background */
+        flex-direction: column;
+        width: 100%; /* Ensure it fits inside the popup */
     }
 
     .user-list ul {
         display: flex;
-        flex-direction: row; /* Make it a row layout */
-        gap: 10px; /* Spacing between users */
+        flex-direction: column;
+        gap: 10px;
         padding: 0;
         margin: 0;
-        overflow-x: auto;
-        white-space: nowrap;
+        overflow-y: auto;
     }
 
     .user-list li {
-        flex: 0 0 auto; /* Ensure items don't shrink */
+        flex: 0 0 auto;
         display: flex;
         align-items: center;
         justify-content: center;
-        min-width: 100px; /* Ensure a minimum width per item */
+        max-width: 33vw;
         padding: 10px;
         border: 2px solid black;
         border-radius: 10px;
@@ -80,7 +94,7 @@
     }
 
     .user-list img {
-        width: 40px; /* Adjust profile pic size */
+        width: 40px;
         height: 40px;
         margin-right: 5px;
     }
