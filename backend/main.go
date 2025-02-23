@@ -589,11 +589,11 @@ func main() {
 
 	backendName := os.Getenv("BACKEND_NAME")
 	if backendName == "" {
-		backendName = "localhost" // Default for local development
+		backendName = "http://localhost:3000" // Default for local development
 	}
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://" + backendName + ":3000"},
+		AllowOrigins:     []string{backendName},
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
