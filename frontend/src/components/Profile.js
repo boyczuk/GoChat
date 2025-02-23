@@ -4,8 +4,6 @@ import { FaCamera } from "react-icons/fa";
 import pfp from "../components/images/pfptemp.jpg";
 import "./Profile.css";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
-
 function Profile() {
     const [profilePicture, setProfilePicture] = useState(pfp);
     const [username, setUsername] = useState("Loading...");
@@ -16,7 +14,7 @@ function Profile() {
 
     useEffect(() => {
         axios
-            .get(`${API_URL}/me`, { withCredentials: true })
+            .get("http://3.17.175.47:8080/me", { withCredentials: true })
             .then((response) => {
                 const { username, bio, profile_picture } = response.data;
                 setUsername(username || "Loading...");
@@ -30,7 +28,7 @@ function Profile() {
 
     const handleSaveUsername = () => {
         axios
-            .post(`${API_URL}/update-username`, { username: newUsername }, { withCredentials: true })
+            .post("http://3.17.175.47:8080/update-username", { username: newUsername }, { withCredentials: true })
             .then(() => {
                 setUsername(newUsername);
                 setIsEditingUsername(false);
@@ -42,7 +40,7 @@ function Profile() {
 
     const handleSaveBio = () => {
         axios
-            .post(`${API_URL}/update-bio`, { bio }, { withCredentials: true })
+            .post("http://3.17.175.47:8080/update-bio", { bio }, { withCredentials: true })
             .then(() => {
                 setSuccessMessage("Bio updated successfully!");
                 setTimeout(() => setSuccessMessage(""), 3000);
@@ -55,7 +53,7 @@ function Profile() {
         formData.append("profile_picture", event.target.files[0]);
 
         axios
-            .post(`${API_URL}/update-profile-picture`, formData, {
+            .post("http://3.17.175.47:8080/update-profile-picture", formData, {
                 withCredentials: true,
                 headers: { "Content-Type": "multipart/form-data" },
             })

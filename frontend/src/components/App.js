@@ -7,8 +7,6 @@ import HomeLoggedOut from "./pages/HomeLoggedOut";
 import "./App.css";
 import axios from "axios";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
-
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [currentPage, setCurrentPage] = useState("messages");
@@ -17,13 +15,13 @@ function App() {
     useEffect(() => {
         // Call to get credentials, if logged in load regular page, if not go to login page
         axios
-            .get(`${API_URL}/me`, { withCredentials: true })
+            .get("http://3.17.175.47:8080/me", { withCredentials: true })
             .then((response) => {
                 console.log("User session active:", response.data);
                 setIsLoggedIn(true);
             })
             .catch((err) => {
-                console.log("No active session:", err);
+                console.error("No active session:", err);
                 setIsLoggedIn(false);
             })
     }, []);

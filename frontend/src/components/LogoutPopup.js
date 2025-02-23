@@ -2,10 +2,12 @@ import React from 'react';
 import axios from "axios";
 import './styles/LogoutPopup.css';
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
+
 function LogoutPopup({ isOpen, onClose, onLogout }) {
     const handleLogout = () => {
         axios
-            .post("http://3.17.175.47:8080/logout", {}, { withCredentials: true })
+            .post(`${API_URL}/logout`, {}, { withCredentials: true })
             .then((response) => {
                 console.log(response.data.message);
                 onLogout();

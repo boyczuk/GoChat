@@ -2,6 +2,8 @@ import { useState } from 'react';
 import axios from 'axios';
 import './styles/RegisterForm.css';
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
+
 function RegisterForm({ onLoginSuccess }) {
     const [name, setName] = useState('');
     const [username, setUsername] = useState('');
@@ -15,7 +17,7 @@ function RegisterForm({ onLoginSuccess }) {
 
         try {
             const response = await axios.post(
-                "http://3.17.175.47:8080/register",
+                `${API_URL}/register`,
                 { username, password },
                 { withCredentials: true }
             );

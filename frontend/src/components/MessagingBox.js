@@ -2,13 +2,16 @@ import { useRef, useEffect, useState } from "react";
 import MessageInput from "./MessageInput";
 import "./styles/MessagingBox.css";
 
+const WS_API_URL = process.env.REACT_APP_WS_URL || "ws://localhost:8080";
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
+
 function MessagingBox({ userId, receiverId }) {
     const messagesEndRef = useRef(null);
     const [messageHistory, setMessageHistory] = useState([]);
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const ws = new WebSocket(`ws://3.17.175.47:8080/ws`);
+        const ws = new WebSocket(`${WS_API_URL}/ws`);
         setSocket(ws);
 
         ws.onmessage = (event) => {
@@ -39,7 +42,7 @@ function MessagingBox({ userId, receiverId }) {
 
     useEffect(() => {
         if (receiverId) {
-            fetch(`http://3.17.175.47:8080/messages?sender_id=${userId}&receiver_id=${receiverId}`)
+            fetch(`${API_URL}/messages?sender_id=${userId}&receiver_id=${receiverId}`)
                 .then((response) => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);

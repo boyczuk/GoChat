@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './styles/UserProfileCard.css';
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
+
 function UserProfileCard() {
     const [username, setUsername] = useState(null);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         // get request to /me
-        axios.get("http://3.17.175.47:8080/me", { withCredentials: true }).then((response) => {
+        axios.get(`${API_URL}/me`, { withCredentials: true }).then((response) => {
             setUsername(response.data.username);
         }).catch((error) => {
             if (error.response) {

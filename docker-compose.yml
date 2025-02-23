@@ -15,7 +15,13 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        - REACT_APP_API_URL=http://3.17.175.47:8080
+        - REACT_APP_WS_URL=ws://3.17.175.47:8080
+    env_file:
+      - .env
     ports:
       - "3000:80"
     depends_on:

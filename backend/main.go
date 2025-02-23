@@ -273,7 +273,12 @@ func logoutUser(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("session_token", "", -1, "/", "3.17.175.47", false, true)
+	backendName := os.Getenv("BACKEND_NAME")
+	if backendName == "" {
+		backendName = "localhost" // Default to localhost if env var is missing
+	}
+
+	c.SetCookie("session_token", "", -1, "/", backendName, false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully."})
 }
@@ -318,8 +323,13 @@ func loginUser(c *gin.Context) {
 
 	fmt.Println("✅ Session created for User ID:", userID, "Token:", sessionToken) // DEBUGGING LOG
 
+	backendName := os.Getenv("BACKEND_NAME")
+	if backendName == "" {
+		backendName = "localhost" // Default to localhost if env var is missing
+	}
+
 	// Set the session cookie
-	c.SetCookie("session_token", sessionToken, 3600*24, "/", "3.17.175.47", false, true)
+	c.SetCookie("session_token", sessionToken, 3600*24, "/", backendName, false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful."})
 }
@@ -376,7 +386,12 @@ func registerUser(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("session_token", sessionToken, 3600*24, "/", "3.17.175.47", false, true)
+	backendName := os.Getenv("BACKEND_NAME")
+	if backendName == "" {
+		backendName = "localhost" // Default to localhost if env var is missing
+	}
+
+	c.SetCookie("session_token", sessionToken, 3600*24, "/", backendName, false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "User registered and logged in!"})
 
@@ -572,8 +587,13 @@ func main() {
 
 	r.SetTrustedProxies(nil)
 
+	backendName := os.Getenv("BACKEND_NAME")
+	if backendName == "" {
+		backendName = "localhost" // Default for local development
+	}
+
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://3.17.175.47:3000"},
+		AllowOrigins:     []string{"http://" + backendName + ":3000"},
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,

@@ -2,6 +2,12 @@ import { useState } from 'react';
 import axios from 'axios';
 import './styles/LoginForm.css';
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
+
+console.log(process.env.REACT_APP_API_URL);
+console.log(API_URL);
+
+
 function LoginForm({ onLoginSuccess }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -13,7 +19,7 @@ function LoginForm({ onLoginSuccess }) {
 
         try {
             const response = await axios.post(
-                "http://3.17.175.47:8080/login",
+                `${API_URL}/login`,
                 { username, password },
                 { withCredentials: true }
             );

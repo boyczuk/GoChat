@@ -1,6 +1,14 @@
 # Use a lightweight Node.js image to build the React app
 FROM node:18-alpine as build
 
+# Set build arguments for React environment variables
+ARG REACT_APP_API_URL
+ARG REACT_APP_WS_URL
+
+# Make these available inside React
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+ENV REACT_APP_WS_URL=$REACT_APP_WS_URL
+
 # Set working directory inside the container
 WORKDIR /app
 

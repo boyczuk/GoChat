@@ -3,6 +3,8 @@ import axios from "axios";
 import pfptemp from './images/pfptemp.jpg';
 import './styles/UserList.css';
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
+
 function UserList({ setReceiverId }) {
     const [users, setUsers] = useState([]);
     const [selectedUserId, setSelectedUserId] = useState(null);
@@ -11,7 +13,7 @@ function UserList({ setReceiverId }) {
     useEffect(() => {
         // Fetch all users
         axios
-            .get("http://3.17.175.47:8080/users")
+            .get(`${API_URL}/users`)
             .then((response) => {
                 console.log("Fetched Users:", response.data);
                 setUsers(response.data);
@@ -19,7 +21,7 @@ function UserList({ setReceiverId }) {
             .catch((error) => console.error("Error fetching users:", error));
 
         axios
-            .get("http://3.17.175.47:8080/me", { withCredentials: true }) 
+            .get(`${API_URL}/me`, { withCredentials: true }) 
             .then((response) => {
                 console.log("Fetched myUserId:", response.data.user_id);
                 setMyUserId(response.data.user_id);

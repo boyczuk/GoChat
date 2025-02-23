@@ -1,6 +1,8 @@
 import { useState } from "react";
 import './styles/MessageInput.css';
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
+
 function MessageInput({ socket, senderId, receiverId }) {
     const [inputValue, setInputValue] = useState("");
 
@@ -19,7 +21,7 @@ function MessageInput({ socket, senderId, receiverId }) {
 
         if (socket && inputValue.trim() !== "" && receiverId) {
             socket.send(JSON.stringify(message));
-            fetch("http://3.17.175.47:8080/messages", {
+            fetch(`${API_URL}/messages`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(message),

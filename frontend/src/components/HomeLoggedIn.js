@@ -5,15 +5,13 @@ import axios from "axios";
 import './HomeLoggedIn.css';
 import UserProfileCard from '../components/UserProfileCard';
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
-
 function HomeLoggedIn() {
     const [userId, setUserId] = useState(null);
     const [receiverId, setReceiverId] = useState(null);
 
     useEffect(() => {
         axios
-            .get(`${API_URL}/me`, { withCredentials: true })
+            .get("http://3.17.175.47:8080/me", { withCredentials: true })
             .then((response) => {
                 console.log("Fetched userId:", response.data.user_id); // Debug
                 setUserId(response.data.user_id);
