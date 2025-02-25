@@ -278,7 +278,7 @@ func logoutUser(c *gin.Context) {
 		backendName = "localhost" // Default to localhost if env var is missing
 	}
 
-	c.SetCookie("session_token", "", -1, "/", backendName, false, true)
+	c.SetCookie("session_token", "", -1, "/", "tangle-chat.com", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully."})
 }
@@ -329,7 +329,7 @@ func loginUser(c *gin.Context) {
 	}
 
 	// Set the session cookie
-	c.SetCookie("session_token", sessionToken, 3600*24, "/", backendName, false, true)
+	c.SetCookie("session_token", sessionToken, 3600*24, "/", "tangle-chat.com", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful."})
 }
@@ -391,7 +391,7 @@ func registerUser(c *gin.Context) {
 		backendName = "localhost" // Default to localhost if env var is missing
 	}
 
-	c.SetCookie("session_token", sessionToken, 3600*24, "/", backendName, false, true)
+	c.SetCookie("session_token", sessionToken, 3600*24, "/", "tangle-chat.com", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "User registered and logged in!"})
 
@@ -593,7 +593,7 @@ func main() {
 	}
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{backendName},
+		AllowOrigins:     []string{"http://tangle-chat.com", "http://3.128.94.181"},
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
