@@ -21,7 +21,8 @@
 .user-list li {
     display: flex;
     align-items: center;
-    width: 100%; /* Ensures full width */
+    width: 100%; /* Ensures it uses the full width of the container */
+    max-width: 90%; /* Limits width within the popup */
     margin-bottom: 10px;
     border: 2px solid black;
     border-radius: 10px;

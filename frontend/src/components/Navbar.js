@@ -7,7 +7,7 @@ import { useState } from "react";
 function Navbar({ setCurrentPage, setIsUserPopupOpen }) {
     return (
         <nav className="navbar">
-            <button className="nav-item menu-button" onClick={() => setIsUserPopupOpen((prev) => !prev)}>
+            <button className="nav-item menu-button" onClick={() => {setIsUserPopupOpen((prev) => !prev); setCurrentPage("messages")}}>
                 <Menu size={25} />
                 <span>Friends</span>
             </button>
