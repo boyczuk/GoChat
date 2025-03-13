@@ -1,5 +1,7 @@
 import { useRef, useEffect, useState } from "react";
+import axios from 'axios';
 import MessageInput from "./MessageInput";
+import pfp from "../components/images/pfptemp.jpg";
 import "./styles/MessagingBox.css";
 
 const WS_API_URL = process.env.REACT_APP_WS_URL || "ws://localhost:8080";
@@ -9,6 +11,8 @@ function MessagingBox({ userId, receiverId }) {
     const messagesEndRef = useRef(null);
     const [messageHistory, setMessageHistory] = useState([]);
     const [socket, setSocket] = useState(null);
+    const [receiverName, setReceiverName] = useState(null);
+    const [profilePicture, setProfilePicture] = useState(pfp);
 
     useEffect(() => {
         const ws = new WebSocket(`${WS_API_URL}/ws`);
@@ -77,8 +81,22 @@ function MessagingBox({ userId, receiverId }) {
                     console.error("Error fetching chat history:", error);
                     setMessageHistory([]);
                 });
+            axios.get(`${API_URL}/getUser/${receiverId}`, { withCredentials: true })
+                .then((response) => {
+                    console.log(response.data);
+                    setReceiverName(response.data.username); // Assuming your API returns { id, name, email }
+                    setProfilePicture(
+                        response.data.profile_picture ? `data:image/jpeg;base64,${response.data.profile_picture}` : pfp
+                    );
+                })
+                .catch((error) => {
+                    console.error("Error fetching receiver's name:", error);
+                    setReceiverName(`User ${receiverId}`); // Fallback
+                });
         }
-    }, [receiverId]);
+    }, [receiverId, userId]);
+
+
 
     useEffect(() => {
         if (messagesEndRef.current) {
@@ -88,6 +106,10 @@ function MessagingBox({ userId, receiverId }) {
 
     return (
         <div className="messaging-box">
+            <div className="receiver-info">
+                <img src={profilePicture} alt="Profile" className="receiver-image" />
+                <h1 className="receiver-name">{receiverName}</h1>
+            </div>
             <div className="sent-messages">
                 {messageHistory
                     .filter(
@@ -102,7 +124,7 @@ function MessagingBox({ userId, receiverId }) {
                             key={index}
                             className={message.sender_id === userId ? "right-aligned" : "left-aligned"}
                         >
-                            {`${message.sender_id === userId ? "You" : `User ${message.sender_id}`}: ${message.content
+                            {`${message.sender_id === userId ? "You" : receiverName}: ${message.content
                                 }`}
                         </p>
                     ))}

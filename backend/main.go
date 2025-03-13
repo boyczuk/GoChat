@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -578,6 +579,52 @@ func updateProfilePicture(c *gin.Context) {
 
 }
 
+func getUserInfo(c *gin.Context) {
+	_, err := c.Cookie("session_token")
+	if err != nil {
+		fmt.Println("No session token found")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Not logged in."})
+		return
+	}
+
+	userIDStr := c.Param("id")
+	userIDI, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	fmt.Println("Session token received")
+
+	var userID int
+	var username, bio string
+	var profilePicture []byte
+
+	err = db.QueryRow(
+		"SELECT users.id, users.username, users.bio, users.profile_picture FROM users WHERE id = $1",
+		userIDI,
+	).Scan(&userID, &username, &bio, &profilePicture)
+
+	if err != nil {
+		fmt.Println("Error retrieving user from session:", err)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid session"})
+		return
+	}
+
+	fmt.Println("User authenticated:", userID)
+
+	var encodedProfilePicture string
+	if profilePicture != nil {
+		encodedProfilePicture = base64.StdEncoding.EncodeToString(profilePicture)
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"user_id":         userID,
+		"username":        username,
+		"bio":             bio,
+		"profile_picture": encodedProfilePicture,
+	})
+}
+
 func main() {
 	// Connect to DB
 	initDB()
@@ -604,6 +651,7 @@ func main() {
 	r.POST("/login", loginUser)
 	r.POST("/logout", logoutUser)
 	r.GET("/me", getLoggedInUser)
+	r.GET("/getUser/:id", getUserInfo)
 	r.GET("/users", getUsers)
 	r.GET("/messages", getChatHistory)
 	r.POST("/update-username", updateUsername)
