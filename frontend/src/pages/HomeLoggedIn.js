@@ -7,7 +7,7 @@ import UserProfileCard from '../components/UserProfileCard';
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
-function HomeLoggedIn({ isUserPopupOpen, setIsUserPopupOpen }) {
+function HomeLoggedIn({ isUserPopupOpen, setIsUserPopupOpen, navigateToPage }) {
     const [userId, setUserId] = useState(null);
     const [receiverId, setReceiverId] = useState(null);
 
@@ -45,7 +45,7 @@ function HomeLoggedIn({ isUserPopupOpen, setIsUserPopupOpen }) {
 
                 <div className="message-window">
                     {userId && receiverId ? (
-                        <MessagingBox userId={userId} receiverId={receiverId} />
+                        <MessagingBox userId={userId} receiverId={receiverId} navigateToPage={navigateToPage} />
                     ) : (
                         <p>Select a user to start messaging</p>
                     )}

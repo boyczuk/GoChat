@@ -4,6 +4,7 @@ import Profile from "./pages/Profile";
 import LogoutPopup from "./components/LogoutPopup";
 import HomeLoggedIn from "./pages/HomeLoggedIn";
 import HomeLoggedOut from "./pages/HomeLoggedOut";
+import ViewProfile from "./pages/ViewProfile";
 import "./App.css";
 import axios from "axios";
 
@@ -14,6 +15,8 @@ function App() {
     const [currentPage, setCurrentPage] = useState("messages");
     const [isPopupOpen, setPopupOpen] = useState(false);
     const [isUserPopupOpen, setIsUserPopupOpen] = useState(false);
+    const [pageData, setPageData] = useState(null);
+
 
     useEffect(() => {
         // Call to get credentials, if logged in load regular page, if not go to login page
@@ -28,6 +31,11 @@ function App() {
                 setIsLoggedIn(false);
             })
     }, []);
+
+    const navigateToPage = (page, data = null) => {
+        setCurrentPage(page);
+        setPageData(data);
+    }
 
     const handleLogout = () => {
         setIsLoggedIn(false);
@@ -51,8 +59,13 @@ function App() {
                     }} setIsUserPopupOpen={setIsUserPopupOpen} />
 
                     {/* Render the selected page */}
-                    {currentPage === "messages" && <HomeLoggedIn isUserPopupOpen={isUserPopupOpen} setIsUserPopupOpen={setIsUserPopupOpen} />}
+                    {currentPage === "messages" && <HomeLoggedIn
+                        isUserPopupOpen={isUserPopupOpen}
+                        setIsUserPopupOpen={setIsUserPopupOpen}
+                        navigateToPage={navigateToPage} />}
                     {currentPage === "profile" && <Profile />}
+                    {currentPage === "viewProfile" && <ViewProfile id={pageData?.id} />}
+                    {console.log("Navigating to viewProfile with ID:", pageData?.id)}
                     <LogoutPopup isOpen={isPopupOpen} onClose={() => setPopupOpen(false)} onLogout={handleLogout} />
                 </div>
             ) : (

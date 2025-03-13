@@ -7,12 +7,13 @@ import "./styles/MessagingBox.css";
 const WS_API_URL = process.env.REACT_APP_WS_URL || "ws://localhost:8080";
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
-function MessagingBox({ userId, receiverId }) {
+function MessagingBox({ userId, receiverId, setCurrentPage, navigateToPage }) {
     const messagesEndRef = useRef(null);
     const [messageHistory, setMessageHistory] = useState([]);
     const [socket, setSocket] = useState(null);
     const [receiverName, setReceiverName] = useState(null);
     const [profilePicture, setProfilePicture] = useState(pfp);
+    const [receiverProfileId, setReceiverProfileId] = useState(null);
 
     useEffect(() => {
         const ws = new WebSocket(`${WS_API_URL}/ws`);
@@ -84,7 +85,9 @@ function MessagingBox({ userId, receiverId }) {
             axios.get(`${API_URL}/getUser/${receiverId}`, { withCredentials: true })
                 .then((response) => {
                     console.log(response.data);
-                    setReceiverName(response.data.username); // Assuming your API returns { id, name, email }
+                    setReceiverName(response.data.username);
+                    console.log(response.data.user_id);
+                    setReceiverProfileId(response.data.user_id); // Assuming your API returns { id, name, email }
                     setProfilePicture(
                         response.data.profile_picture ? `data:image/jpeg;base64,${response.data.profile_picture}` : pfp
                     );
@@ -96,8 +99,6 @@ function MessagingBox({ userId, receiverId }) {
         }
     }, [receiverId, userId]);
 
-
-
     useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -106,7 +107,14 @@ function MessagingBox({ userId, receiverId }) {
 
     return (
         <div className="messaging-box">
-            <div className="receiver-info">
+            <div className="receiver-info" onClick={() => {
+                console.log("Navigating to viewProfile with ID:", receiverProfileId);
+                if (receiverProfileId) {
+                    navigateToPage("viewProfile", { id: receiverProfileId });
+                } else {
+                    console.error("receiverProfileId is not available yet.");
+                }
+            }}>
                 <img src={profilePicture} alt="Profile" className="receiver-image" />
                 <h1 className="receiver-name">{receiverName}</h1>
             </div>
@@ -124,14 +132,13 @@ function MessagingBox({ userId, receiverId }) {
                             key={index}
                             className={message.sender_id === userId ? "right-aligned" : "left-aligned"}
                         >
-                            {`${message.sender_id === userId ? "You" : receiverName}: ${message.content
-                                }`}
+                            {`${message.sender_id === userId ? "You" : receiverName}: ${message.content}`}
                         </p>
                     ))}
                 <div ref={messagesEndRef} />
             </div>
             <MessageInput socket={socket} senderId={userId} receiverId={receiverId} />
-        </div>
+        </div >
     );
 }
 
