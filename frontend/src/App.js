@@ -63,9 +63,9 @@ function App() {
                         isUserPopupOpen={isUserPopupOpen}
                         setIsUserPopupOpen={setIsUserPopupOpen}
                         navigateToPage={navigateToPage} />}
+                    
                     {currentPage === "profile" && <Profile />}
                     {currentPage === "viewProfile" && <ViewProfile id={pageData?.id} />}
-                    {console.log("Navigating to viewProfile with ID:", pageData?.id)}
                     <LogoutPopup isOpen={isPopupOpen} onClose={() => setPopupOpen(false)} onLogout={handleLogout} />
                 </div>
             ) : (

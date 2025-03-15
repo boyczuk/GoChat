@@ -15,7 +15,6 @@ function UserList({ setReceiverId }) {
         axios
             .get(`${API_URL}/users`)
             .then((response) => {
-                console.log("Fetched Users:", response.data);
                 setUsers(response.data);
             })
             .catch((error) => console.error("Error fetching users:", error));
@@ -23,14 +22,12 @@ function UserList({ setReceiverId }) {
         axios
             .get(`${API_URL}/me`, { withCredentials: true }) 
             .then((response) => {
-                console.log("Fetched myUserId:", response.data.user_id);
                 setMyUserId(response.data.user_id);
             })
             .catch((error) => console.error("Error fetching user ID:", error));
     }, []);
 
     const handleUserClick = (userId) => {
-        console.log("User selected:", userId);
         setSelectedUserId(userId);
         setReceiverId(userId); 
     };

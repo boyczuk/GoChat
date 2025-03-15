@@ -3,7 +3,6 @@ import MessagingBox from '../components/MessagingBox';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import './HomeLoggedIn.css';
-import UserProfileCard from '../components/UserProfileCard';
 
 function HomeLoggedIn() {
     const [userId, setUserId] = useState(null);
@@ -28,7 +27,6 @@ function HomeLoggedIn() {
         <div className="main-page">
             <div className="container">
                 <div className="users-window">
-                    {/* <UserProfileCard /> */}
                     <UserList setReceiverId={setReceiverId} />
                 </div>
                 <div className="message-window">
