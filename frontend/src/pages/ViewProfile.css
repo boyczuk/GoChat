@@ -1,0 +1,90 @@
+.user-page {
+    padding: 5%;
+    margin: auto;
+    font-family: Arial, sans-serif;
+}
+
+.user-headboard {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.user-profilepicture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 3px solid #ccc;
+}
+
+.user-profilepicture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.name-interaction {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.name-interaction h1 {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.user-stats {
+    display: flex;
+    gap: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+}
+
+.user-bio {
+    font-size: 14px;
+    color: #777;
+}
+
+.user-posts {
+    margin-top: 20px;
+}
+
+.user-posts h1 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.user-posts img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    padding: 10px;
+}
+
+@media only screen and (max-width: 600px) {
+    .user-posts {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+        justify-content: center;
+    }
+
+    .user-posts img {
+        width: 100%;
+        height: auto;
+        max-width: 100px;
+        max-height: 100px;
+        object-fit: cover;
+    }
+}

@@ -22,11 +22,7 @@ function HomeLoggedIn() {
     useEffect(() => {
         console.log("Updated userId:", userId, "Updated receiverId:", receiverId); // Debug
     }, [userId, receiverId]);
-    
-    
-    
 
-    console.log("userId:", userId, "receiverId:", receiverId); // Debug
 
     return (
         <div className="main-page">
