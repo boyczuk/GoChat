@@ -1,4 +1,4 @@
-# GoChat
+# Tangle
 
 GoChat is a **real-time messaging application** built with **Go**, **React**, **PostgreSQL**, and **WebSockets**. It allows users to **register, log in, and chat** with each other in a seamless and scalable environment.
 
