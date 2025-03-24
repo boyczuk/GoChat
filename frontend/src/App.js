@@ -1,81 +1,85 @@
+import { BrowserRouter as Router, Routes, Route, useNavigate, useParams, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
-import Profile from "./pages/Profile";
 import LogoutPopup from "./components/LogoutPopup";
 import HomeLoggedIn from "./pages/HomeLoggedIn";
 import HomeLoggedOut from "./pages/HomeLoggedOut";
+import Profile from "./pages/Profile";
 import ViewProfile from "./pages/ViewProfile";
-import "./App.css";
+import NotFound from "./pages/404page";
 import axios from "axios";
+import "./App.css";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
-function App() {
+function RouterApp() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [currentPage, setCurrentPage] = useState("messages");
     const [isPopupOpen, setPopupOpen] = useState(false);
     const [isUserPopupOpen, setIsUserPopupOpen] = useState(false);
-    const [pageData, setPageData] = useState(null);
-
 
     useEffect(() => {
-        // Call to get credentials, if logged in load regular page, if not go to login page
         axios
             .get(`${API_URL}/me`, { withCredentials: true })
-            .then((response) => {
-                console.log("User session active:", response.data);
+            .then((res) => {
+                console.log("User session active:", res.data);
                 setIsLoggedIn(true);
             })
             .catch((err) => {
                 console.log("No active session:", err);
                 setIsLoggedIn(false);
-            })
+            });
     }, []);
 
-    const navigateToPage = (page, data = null) => {
-        setCurrentPage(page);
-        setPageData(data);
-    }
-
-    const handleLogout = () => {
-        setIsLoggedIn(false);
-        setPopupOpen(false);
-        setCurrentPage("messages");
-        console.log("User logged out");
+    if (!isLoggedIn) {
+        return <HomeLoggedOut onLoginSuccess={() => setIsLoggedIn(true)} />;
     }
 
     return (
-        <div className="App">
-            {/* If logged in display top, otherwise display logged out until login success and set it to true */}
-            {isLoggedIn ? (
-                <div className="logged-in">
-
-                    <Navbar setCurrentPage={(page) => {
+        <Router>
+            <div className="App logged-in">
+                <Navbar
+                    setCurrentPage={(page) => {
                         if (page === "logout") {
                             setPopupOpen(true);
-                        } else {
-                            setCurrentPage(page);
                         }
-                    }} setIsUserPopupOpen={setIsUserPopupOpen} />
-
-                    {/* Render the selected page */}
-                    {currentPage === "messages" && <HomeLoggedIn
-                        isUserPopupOpen={isUserPopupOpen}
-                        setIsUserPopupOpen={setIsUserPopupOpen}
-                        navigateToPage={navigateToPage} />}
-                    
-                    {currentPage === "profile" && <Profile />}
-                    {currentPage === "viewProfile" && <ViewProfile id={pageData?.id} />}
-                    <LogoutPopup isOpen={isPopupOpen} onClose={() => setPopupOpen(false)} onLogout={handleLogout} />
-                </div>
-            ) : (
-                <div className="logged-out">
-                    <HomeLoggedOut onLoginSuccess={() => setIsLoggedIn(true)} />
-                </div>
-            )}
-
-        </div>
+                    }}
+                    setIsUserPopupOpen={setIsUserPopupOpen}
+                />
+                <Routes>
+                    <Route path="/" element={<HomeLoggedInWrapper isUserPopupOpen={isUserPopupOpen} setIsUserPopupOpen={setIsUserPopupOpen} />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/view/:id" element={<ViewProfileWrapper />} />
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+                <LogoutPopup isOpen={isPopupOpen} onClose={() => setPopupOpen(false)} onLogout={() => {
+                    setIsLoggedIn(false);
+                    setPopupOpen(false);
+                }} />
+            </div>
+        </Router>
     );
 }
 
-export default App;
+function HomeLoggedInWrapper({ isUserPopupOpen, setIsUserPopupOpen }) {
+    const navigate = useNavigate();
+    return (
+        <HomeLoggedIn
+            isUserPopupOpen={isUserPopupOpen}
+            setIsUserPopupOpen={setIsUserPopupOpen}
+            navigateToPage={(page, data) => {
+                if (page === "viewProfile" && data?.id) {
+                    navigate(`/view/${data.id}`);
+                } else {
+                    navigate(`/${page}`);
+                }
+            }}
+        />
+    );
+}
+
+function ViewProfileWrapper() {
+    const { id } = useParams();
+    return <ViewProfile id={id} />;
+}
+
+export default RouterApp;
