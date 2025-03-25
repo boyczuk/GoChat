@@ -2,6 +2,8 @@
 
 GoChat is a **real-time messaging application** built with **Go**, **React**, **PostgreSQL**, and **WebSockets**. It allows users to **register, log in, and chat** with each other in a seamless and scalable environment.
 
+The motivation for this project is to learn more about creating APIs in Go, practice cybersecurity implementations, and explore data visualization in the context of social media. I thought it would be really cool to map out peoples' connections as a web. I think the resulting map will show new mutual connections and sub-communities which is really fascinating.
+
 ## Features
 - **User Authentication**: Secure login and registration system using session-based authentication.
 - **Real-Time Messaging**: WebSockets enable real-time text messaging between users.
