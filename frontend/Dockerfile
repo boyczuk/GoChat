@@ -33,5 +33,8 @@ COPY --from=build /app/build /usr/share/nginx/html
 # Expose port 80 for serving the frontend
 EXPOSE 80
 
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]

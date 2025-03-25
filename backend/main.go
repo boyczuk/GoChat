@@ -658,7 +658,15 @@ func main() {
 	r.POST("/update-bio", updateBio)
 	r.POST("/update-profile-picture", updateProfilePicture)
 
-	r.Static("/static", "./frontend/public")
+	// Serve static frontend files
+	r.Static("/static", "./frontend/build/static")
+	r.StaticFile("/favicon.ico", "./frontend/build/favicon.ico")
+	r.StaticFile("/logo192.png", "./frontend/build/logo192.png")
+
+	// All unmatched GET requests serve React app
+	r.NoRoute(func(c *gin.Context) {
+		c.File("./frontend/build/index.html")
+	})
 
 	r.GET("/ws", func(c *gin.Context) {
 		handleWebSocket(c.Writer, c.Request)
