@@ -677,20 +677,20 @@ func main() {
 	}
 
 	// dev environment
+	// corsConfig := cors.Config{
+	// 	AllowOrigins:     []string{"http://localhost"},
+	// 	AllowMethods:     []string{"GET", "POST", "OPTIONS"},
+	// 	AllowHeaders:     []string{"Content-Type", "Authorization"},
+	// 	AllowCredentials: true,
+	// }
+
+	// production
 	corsConfig := cors.Config{
-		AllowOrigins:     []string{"http://localhost"},
+		AllowOrigins:     []string{"http://tangle-chat.com", "http://3.128.94.181"},
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
 	}
-
-	// production
-	// 	cors.Config{
-	// 		AllowOrigins:     []string{"http://tangle-chat.com", "http://3.128.94.181"},
-	// 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
-	// 		AllowHeaders:     []string{"Content-Type", "Authorization"},
-	// 		AllowCredentials: true,
-	// }
 
 	r.Use(cors.New(corsConfig))
 
