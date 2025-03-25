@@ -13,7 +13,7 @@ GoChat is a **real-time messaging application** built with **Go**, **React**, **
 ![image](https://github.com/user-attachments/assets/493ec0f1-c9e3-4e66-9b3f-d54c8042d967)
 User profile
 
-![image](https://github.com/user-attachments/assets/3779aeca-4e80-444b-a00d-44d87da35f8b)
+![image](https://github.com/user-attachments/assets/0fb27514-6c85-40f8-8ea3-9138008cb83d)
 Messaging a friend
 
 ![image](https://github.com/user-attachments/assets/cd7cb9e2-b1d8-46a6-b1cd-41b11156f5ad)
