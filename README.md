@@ -9,6 +9,18 @@ GoChat is a **real-time messaging application** built with **Go**, **React**, **
 - **Responsive UI**: Built with React for a clean and intuitive messaging experience.
 - **Scalability**: Designed to be hosted on **AWS** for production deployment.
 
+## Photos
+![image](https://github.com/user-attachments/assets/493ec0f1-c9e3-4e66-9b3f-d54c8042d967)
+User profile
+
+![image](https://github.com/user-attachments/assets/3779aeca-4e80-444b-a00d-44d87da35f8b)
+Messaging a friend
+
+![image](https://github.com/user-attachments/assets/cd7cb9e2-b1d8-46a6-b1cd-41b11156f5ad)
+Viewing a friend's profile
+
+
+
 ## Tech Stack
 - **Backend**: Go (`net/http`, `gorilla/websocket`, `gorm`)
 - **Frontend**: React (`Vite`, `TypeScript`)
