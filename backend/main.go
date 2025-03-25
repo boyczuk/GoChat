@@ -5,9 +5,11 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -17,6 +19,7 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/time/rate"
 )
 
 var db *sql.DB
@@ -103,6 +106,39 @@ func createTables() {
 		panic("Failed to create tables: " + err.Error())
 	} else {
 		fmt.Println("✅ Database tables ensured.")
+	}
+}
+
+var visitors = make(map[string]*rate.Limiter)
+var mu sync.Mutex
+
+func getVisitorLimiter(ip string) *rate.Limiter {
+	mu.Lock()
+	defer mu.Unlock()
+
+	limiter, exists := visitors[ip]
+	if !exists {
+		limiter = rate.NewLimiter(5, 5)
+		visitors[ip] = limiter
+	}
+	return limiter
+}
+
+func rateLimitMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ip, _, err := net.SplitHostPort(c.Request.RemoteAddr)
+		if err != nil {
+			c.AbortWithStatusJSON(500, gin.H{"error": "Internal error"})
+			return
+		}
+
+		limiter := getVisitorLimiter(ip)
+		if !limiter.Allow() {
+			c.AbortWithStatusJSON(429, gin.H{"error": "Too many requests"})
+			return
+		}
+
+		c.Next()
 	}
 }
 
@@ -640,24 +676,35 @@ func main() {
 		backendName = "http://localhost:3000" // Default for local development
 	}
 
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost", "http://localhost:3000", "http://localhost:80", "http://tangle-chat.com", "http://3.128.94.181"},
+	// dev environment
+	corsConfig := cors.Config{
+		AllowOrigins:     []string{"http://localhost"},
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
-	}))
+	}
+
+	// production
+	// 	cors.Config{
+	// 		AllowOrigins:     []string{"http://tangle-chat.com", "http://3.128.94.181"},
+	// 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
+	// 		AllowHeaders:     []string{"Content-Type", "Authorization"},
+	// 		AllowCredentials: true,
+	// }
+
+	r.Use(cors.New(corsConfig))
 
 	// Route for registering user
-	r.POST("/register", registerUser)
-	r.POST("/login", loginUser)
+	r.POST("/register", rateLimitMiddleware(), registerUser)
+	r.POST("/login", rateLimitMiddleware(), loginUser)
 	r.POST("/logout", logoutUser)
 	r.GET("/me", getLoggedInUser)
 	r.GET("/getUser/:id", getUserInfo)
 	r.GET("/users", getUsers)
 	r.GET("/messages", getChatHistory)
-	r.POST("/update-username", updateUsername)
-	r.POST("/update-bio", updateBio)
-	r.POST("/update-profile-picture", updateProfilePicture)
+	r.POST("/update-username", rateLimitMiddleware(), updateUsername)
+	r.POST("/update-bio", rateLimitMiddleware(), updateBio)
+	r.POST("/update-profile-picture", rateLimitMiddleware(), updateProfilePicture)
 
 	// Serve static frontend files
 	r.Static("/static", "./frontend/build/static")

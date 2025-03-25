@@ -44,6 +44,7 @@ function RouterApp() {
                         }
                     }}
                     setIsUserPopupOpen={setIsUserPopupOpen}
+                    onLogoutClick={() => setPopupOpen(true)}
                 />
                 <Routes>
                     <Route path="/" element={<HomeLoggedInWrapper isUserPopupOpen={isUserPopupOpen} setIsUserPopupOpen={setIsUserPopupOpen} />} />
