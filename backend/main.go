@@ -27,7 +27,7 @@ var db *sql.DB
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		origin := r.Header.Get("Origin")
-		return origin == "http://localhost" || origin == "http://localhost:80" || origin == "https://tangle-chat.com"
+		return origin == "http://localhost" || origin == "http://localhost:80" || origin == "http://tangle-chat.com"
 	},
 }
 
