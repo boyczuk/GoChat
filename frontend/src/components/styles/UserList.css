@@ -1,15 +1,14 @@
 .user-list {
-    width: 100%; /* Ensures full width in sidebar */
-    max-height: 80vh; /* Prevents overflow */
+    width: 100%;
+    max-height: 80vh;
     overflow-y: auto;
     display: flex;
-    flex-direction: column; /* Forces vertical layout */
+    flex-direction: column;
     align-items: center;
     padding: 10px;
-    background-color: white;
+    background-color: #EFF2EF;
 }
 
-/* Unordered list */
 .user-list ul {
     list-style: none;
     padding: 0;
@@ -17,33 +16,32 @@
     width: 100%;
 }
 
-/* User List Items */
 .user-list li {
     display: flex;
     align-items: center;
-    width: 100%; /* Ensures it uses the full width of the container */
-    max-width: 90%; /* Limits width within the popup */
+    width: 100%;
+    max-width: 90%;
     margin-bottom: 10px;
-    border: 2px solid black;
+    border: 2px solid #BC8DA7;
     border-radius: 10px;
     padding: 10px;
-    background-color: #f9f9f9;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(188, 141, 167, 0.2);
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .user-list li:hover {
-    background-color: #f0f0f0;
+    background-color: #FCE8F0;
 }
 
 .user-list li.selected-user {
-    background-color: #cce7ff;
-    border: 2px solid #007bff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #E36397;
+    border: 2px solid #E36397;
+    color: white;
+    box-shadow: 0 4px 8px rgba(227, 99, 151, 0.3);
 }
 
-/* Profile Pictures */
 .user-list img {
     border-radius: 50%;
     margin-right: 10px;
@@ -51,23 +49,22 @@
     vertical-align: middle;
 }
 
-/* User Text */
 .user-list p {
     margin: 0;
     font-size: 16px;
     line-height: 1;
     display: inline-block;
     vertical-align: middle;
+    color: #333;
 }
 
-/* Mobile Responsive - Ensure user list remains usable */
 @media (max-width: 768px) {
     .user-list {
-        max-height: 80vh; /* Adjust height as needed */
-        overflow-y: auto; /* Allows scrolling if content exceeds height */
+        max-height: 80vh;
+        overflow-y: auto;
         display: flex;
         flex-direction: column;
-        width: 100%; /* Ensure it fits inside the popup */
+        width: 100%;
     }
 
     .user-list ul {
@@ -86,10 +83,10 @@
         justify-content: center;
         max-width: 33vw;
         padding: 10px;
-        border: 2px solid black;
+        border: 2px solid #BC8DA7;
         border-radius: 10px;
-        background-color: #f9f9f9;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(188, 141, 167, 0.1);
         cursor: pointer;
         transition: background-color 0.3s ease, box-shadow 0.3s ease;
     }

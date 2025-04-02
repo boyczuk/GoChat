@@ -3,8 +3,7 @@
     justify-content: space-between; /* Pushes elements to opposite sides */
     align-items: center;
     padding: 10px 20px;
-    width: 100%;
-    background-color: #fff;
+    width: 98%; 
 }
 
 /* Group all right-side buttons */

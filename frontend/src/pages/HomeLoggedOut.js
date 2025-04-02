@@ -8,7 +8,7 @@ function HomeLoggedOut({ onLoginSuccess }) {
 
     return (
         <div className="home-logged-out">
-            <h1>Welcome to Adlai's Chat Application!</h1>
+            <h1>Welcome to Tangle!</h1>
             <p>Connect with others using a secure and modern chat platform built with Go and React.</p>
             
             {showLogin ? <LoginForm onLoginSuccess={onLoginSuccess} /> : <RegisterForm onLoginSuccess={onLoginSuccess} />}

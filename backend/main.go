@@ -662,6 +662,29 @@ func getUserInfo(c *gin.Context) {
 	})
 }
 
+func getTotalUsers(c *gin.Context) {
+	fmt.Println("✅ /total-users route hit")
+
+	_, err := c.Cookie("session_token")
+	if err != nil {
+		fmt.Println("No session token found")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Not logged in."})
+		return
+	}
+
+	var totalUsers int
+
+	err = db.QueryRow("SELECT COUNT(*) FROM users").Scan(&totalUsers)
+
+	if err != nil {
+		fmt.Println("Error retrieving user count:", err)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid query"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"total_users": totalUsers})
+}
+
 func main() {
 	// Connect to DB
 	initDB()
@@ -702,6 +725,7 @@ func main() {
 	r.GET("/getUser/:id", getUserInfo)
 	r.GET("/users", getUsers)
 	r.GET("/messages", getChatHistory)
+	r.GET("/total-users", getTotalUsers)
 	r.POST("/update-username", rateLimitMiddleware(), updateUsername)
 	r.POST("/update-bio", rateLimitMiddleware(), updateBio)
 	r.POST("/update-profile-picture", rateLimitMiddleware(), updateProfilePicture)
@@ -721,6 +745,6 @@ func main() {
 	})
 
 	go broadcaster()
-
+	
 	r.Run("0.0.0.0:8080")
 }

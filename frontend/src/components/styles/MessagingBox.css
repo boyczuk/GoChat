@@ -1,10 +1,11 @@
 .messaging-box {
-    border: 2px solid black;
+    border: 2px solid #BC8DA7;
     border-radius: 10px;
     height: 78vh;
     padding: 10px;
     display: flex;
     flex-direction: column;
+    background-color: #FFF5F7;
 }
 
 .sent-messages {
@@ -12,22 +13,29 @@
     flex-direction: column;
     overflow-y: auto;
     height: 90%;
-    background-color: #f9f9f9;
+    background-color: #FFF5F7;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+}
+
+.sent-messages::-webkit-scrollbar {
+    display: none;
 }
 
 .receiver-info {
-    display: flex; 
-    align-items: center; 
+    display: flex;
+    align-items: center;
     gap: 10px;
     cursor: pointer;
 }
 
 .receiver-info:hover {
-    color: #084298;
+    color: #E36397;
 }
 
 .receiver-image {
-    width: 40px; 
+    width: 40px;
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
@@ -36,31 +44,33 @@
 .receiver-name {
     font-size: 18px;
     margin: 0;
+    color: #333;
 }
 
 .left-aligned {
     align-self: flex-start;
-    background-color: #d1e7dd;
-    color: #0f5132;
+    background: linear-gradient(135deg, #F6F2F7, #E7DFF1); /* soft lavender gradient */
+    color: #3a3a3a;
     padding: 8px 12px;
     border-radius: 10px;
     margin: 5px 0;
     max-width: 60%;
+    border: 1px solid #bdb4bf;
 }
 
 .right-aligned {
     align-self: flex-end;
-    background-color: #cfe2ff;
-    color: #084298;
+    background: linear-gradient(135deg, #BC8DA7, #E36397);
+    color: white;
     padding: 8px 12px;
     border-radius: 10px;
     margin: 5px 0;
     max-width: 60%;
+    border: 1px solid #bc8da793;
 }
 
 @media (max-width: 844px) {
     .messaging-box {
         height: 68vh;
     }
-
 }

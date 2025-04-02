@@ -1,0 +1,25 @@
+.notfound-page {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #EFF2EF;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    color: #333;
+    padding: 20px;
+}
+
+.notfound-page h1 {
+    font-size: 100px;
+    font-weight: bold;
+    color: #E36397;
+    margin: 0;
+}
+
+.notfound-page h2 {
+    font-size: 20px;
+    margin-top: 10px;
+    color: #777;
+}

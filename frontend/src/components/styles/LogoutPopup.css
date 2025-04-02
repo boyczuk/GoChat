@@ -12,13 +12,14 @@
 }
 
 .popup-box {
-    background: white;
+    background: #fff;
     padding: 20px;
     border-radius: 8px;
     width: 300px;
     max-width: 90%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 8px rgba(227, 99, 151, 0.2);
     text-align: center;
+    border: 2px solid #F3BFC4;
 }
 
 .options {
@@ -28,7 +29,7 @@
 }
 
 .logout-button {
-    background-color: red;
+    background-color: #E36397;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -38,11 +39,11 @@
 }
 
 .logout-button:hover {
-    background-color: darkred;
+    background-color: #bc5a7f;
 }
 
 .cancel-button {
-    background-color: gray;
+    background-color: #BDB4BF;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -52,5 +53,5 @@
 }
 
 .cancel-button:hover {
-    background-color: darkgray;
+    background-color: #9a8fa0;
 }

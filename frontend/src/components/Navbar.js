@@ -23,7 +23,7 @@ function Navbar({ setIsUserPopupOpen, onLogoutClick }) {
             <div className="nav-buttons">
                 <button className="nav-item" onClick={() => navigate("/")}>
                     <MessageCircle size={25} />
-                    <span>Messages</span>
+                    <span>Home</span>
                 </button>
                 <button className="nav-item" onClick={() => navigate("/profile")}>
                     <User size={25} />

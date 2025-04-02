@@ -23,9 +23,12 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.3); /* Dark overlay */
-    z-index: 999; /* Behind the popup */
-    display: none; /* Hidden by default */
+    background: rgba(0, 0, 0, 0.3);
+    /* Dark overlay */
+    z-index: 999;
+    /* Behind the popup */
+    display: none;
+    /* Hidden by default */
 }
 
 /* Show backdrop only when sidebar is open */
@@ -38,9 +41,10 @@
     position: fixed;
     left: 0;
     top: 0;
-    width: 30vw; /* Takes 30% of the screen instead of 50% */
+    width: 30vw;
+    /* Takes 30% of the screen instead of 50% */
     height: 100vh;
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: #EFF2EF;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
     padding: 20px;
     display: flex;
@@ -76,13 +80,153 @@
     overflow-y: auto;
 }
 
-/* Mobile View: Make popup full-screen */
+.no-chat-placeholder {
+    animation: fadeIn 0.5s ease-in;
+    padding: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.placeholder-layout {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: left;
+
+    /* spacing between arrow and cards */
+    flex-wrap: wrap;
+    max-width: 100%;
+    width: 100%;
+    margin-top: 40px;
+}
+
+.arrow-instructions {
+    flex-shrink: 0;
+    width: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: -80px;
+    margin-left: -30px;
+}
+
+.arrow-bounce-wrapper {
+    animation: bounceUp 1.5s infinite;
+}
+
+.arrow {
+    font-size: 60px;
+    color: #E36397;
+    transform: rotate(-90deg);
+    margin-left: -20px;
+}
+
+.arrow-text {
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 16px;
+    color: #E36397;
+    text-align: center;
+}
+
+.info-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    flex: 1;
+}
+
+.info-card {
+    background: #fff;
+    border: 2px solid #F3BFC4;
+    border-radius: 16px;
+    padding: 30px 35px;
+    min-width: 260px;
+    width: 30%;
+    max-width: 520px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    font-size: 27px;
+    text-align: left;
+    transition: transform 0.2s ease;
+}
+
+.info-card h3 {
+    font-size: 22px;
+    margin-bottom: 12px;
+    color: #E36397;
+}
+
+.info-card ul {
+    padding-left: 20px;
+    margin: 8px 0;
+}
+
+.info-card li {
+    margin-bottom: 6px;
+}
+
+.info-card a {
+    color: #E36397;
+    text-decoration: none;
+    font-weight: 500;
+
+}
+
+.info-card a:hover {
+    text-decoration: underline;
+}
+
+
+.total-users {
+    font-size: 28px;
+    color: #E36397;
+    font-weight: bold;
+}
+
+
+@keyframes bounceUp {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
 @media (max-width: 768px) {
+    .placeholder-layout {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .arrow-instructions {
+        order: -1;
+        margin-bottom: 20px;
+    }
+
+    .info-card {
+        width: 90%;
+        max-width: none;
+    }
+
     .container {
         flex-direction: column;
     }
 
     .popup {
-        width: 40vw; /* Smaller screens use 70% width */
+        width: 40vw;
     }
+}
+
+@media (max-width: 1005px) {
+    .arrow-instructions {
+        display: none;
+    }
+
 }

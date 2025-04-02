@@ -11,7 +11,6 @@ function MessageInput({ socket, senderId, receiverId }) {
     };
 
     const handleSubmit = () => {
-        console.log("Sender ID:", senderId, "Receiver ID:", receiverId); // Debug
         const message = {
             sender_id: senderId,
             receiver_id: receiverId,
@@ -19,6 +18,7 @@ function MessageInput({ socket, senderId, receiverId }) {
             timestamp: new Date().toISOString(),
         };
 
+        // Giving error?
         if (socket && inputValue.trim() !== "" && receiverId) {
             socket.send(JSON.stringify(message));
             fetch(`${API_URL}/messages`, {

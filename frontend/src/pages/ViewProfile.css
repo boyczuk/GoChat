@@ -2,6 +2,8 @@
     padding: 5%;
     margin: auto;
     font-family: Arial, sans-serif;
+    background-color: #EFF2EF;
+    color: #333;
 }
 
 .user-headboard {
@@ -9,14 +11,14 @@
     align-items: center;
     gap: 30px;
     padding-bottom: 20px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 2px solid #D9D9D9;
 }
 
 .user-profilepicture {
     width: 150px;
     height: 150px;
     border-radius: 50%;
-    border: 3px solid #ccc;
+    border: 3px solid #BC8DA7;
 }
 
 .user-profilepicture img {
@@ -41,6 +43,7 @@
 .name-interaction h1 {
     font-size: 24px;
     font-weight: bold;
+    color: #E36397;
 }
 
 .user-stats {
@@ -48,7 +51,7 @@
     gap: 20px;
     font-size: 16px;
     font-weight: bold;
-    color: #555;
+    color: #BC8DA7;
 }
 
 .user-bio {
@@ -63,6 +66,7 @@
 .user-posts h1 {
     font-size: 18px;
     font-weight: bold;
+    color: #E36397;
 }
 
 .user-posts img {
@@ -70,6 +74,10 @@
     height: 300px;
     object-fit: cover;
     padding: 10px;
+    border: 2px solid #F3BFC4;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(227, 99, 151, 0.1);
 }
 
 @media only screen and (max-width: 600px) {
