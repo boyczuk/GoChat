@@ -210,9 +210,17 @@
         margin-bottom: 20px;
     }
 
+    .info-cards {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
     .info-card {
-        width: 90%;
+        width: 97%;
         max-width: none;
+        min-width: auto;
+        box-sizing: border-box;
     }
 
     .container {
@@ -222,11 +230,19 @@
     .popup {
         width: 40vw;
     }
-}
 
-@media (max-width: 1005px) {
     .arrow-instructions {
-        display: none;
+        margin-left: -70%;
     }
 
+    .arrow {
+        margin-left: -230%;
+    }
+
+}
+
+@media (max-width: 460px) {
+    .arrow {
+        margin-left: -170%;
+    }
 }

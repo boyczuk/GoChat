@@ -44,6 +44,21 @@
     background: none;
 }
 
+.nav-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    font-family: 'Boldonse', system-ui;
+    font-weight: 400;
+    color: #E36397;
+    font-weight: bold;
+    pointer-events: none; /* lets clicks pass through */
+    white-space: nowrap;
+    z-index: 0;
+}
+
+
 /* Mobile: Hide text but keep icons */
 @media (max-width: 844px) {
     .nav-item span {
@@ -53,5 +68,11 @@
     .nav-item svg {
         width: 28px;
         height: 28px;
+    }
+}
+
+@media (max-width: 559px) {
+    .nav-title {
+        margin-top: 100px;
     }
 }

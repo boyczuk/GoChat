@@ -59,8 +59,8 @@ function HomeLoggedIn({ isUserPopupOpen, setIsUserPopupOpen, navigateToPage }) {
                         <MessagingBox userId={userId} receiverId={receiverId} navigateToPage={navigateToPage} />
                     ) : (
                         <div className="no-chat-placeholder">
+
                             <div className="placeholder-layout">
-                                {/* Left column: arrow + instructions */}
                                 <div className="arrow-instructions">
                                     <div className="arrow-bounce-wrapper">
                                         <div className="arrow">→</div>
@@ -68,7 +68,6 @@ function HomeLoggedIn({ isUserPopupOpen, setIsUserPopupOpen, navigateToPage }) {
                                     <div className="arrow-text">Click "Friends" to start chatting!</div>
                                 </div>
 
-                                {/* Right column: app info cards */}
                                 <div className="info-cards">
                                     <div className="info-card">
                                         <h3>✨ Recent Features</h3>

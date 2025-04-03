@@ -20,6 +20,8 @@ function Navbar({ setIsUserPopupOpen, onLogoutClick }) {
                 <span>Friends</span>
             </button>
 
+            <div className="nav-title">Tangle Chat</div>
+
             <div className="nav-buttons">
                 <button className="nav-item" onClick={() => navigate("/")}>
                     <MessageCircle size={25} />
