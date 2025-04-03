@@ -3,7 +3,8 @@
     justify-content: space-between; /* Pushes elements to opposite sides */
     align-items: center;
     padding: 10px 20px;
-    width: 98%; 
+    width: 98%;
+    position: relative; 
 }
 
 /* Group all right-side buttons */
@@ -74,5 +75,6 @@
 @media (max-width: 559px) {
     .nav-title {
         margin-top: 100px;
+        margin-left: -10px;
     }
 }

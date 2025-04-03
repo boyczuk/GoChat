@@ -23,7 +23,5 @@ html, body {
 
 
 @media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-  }
+
 }

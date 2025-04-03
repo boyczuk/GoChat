@@ -69,8 +69,10 @@
     border: 1px solid #bc8da793;
 }
 
-@media (max-width: 844px) {
+@media (max-width: 560px) {
     .messaging-box {
-        height: 68vh;
+        height: 90%;
+        margin-top: 12%;
+        
     }
 }
