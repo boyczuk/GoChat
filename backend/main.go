@@ -27,7 +27,7 @@ var db *sql.DB
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		origin := r.Header.Get("Origin")
-		return origin == "http://localhost" || origin == "http://localhost:80" || origin == "http://tangle-chat.com"
+		return origin == "http://localhost" || origin == "http://localhost:80" || origin == "https://tangle-chat.com" || origin == "https://www.tangle-chat.com"
 	},
 }
 
@@ -53,8 +53,9 @@ func initDB() {
 	dbUser := os.Getenv("POSTGRES_USER")
 	dbPassword := os.Getenv("POSTGRES_PASSWORD")
 	dbName := os.Getenv("POSTGRES_DB")
+	hostName := os.Getenv("DB_HOST")
 
-	dsn := fmt.Sprintf("host=db user=%s password=%s dbname=%s sslmode=disable", dbUser, dbPassword, dbName)
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", hostName, dbUser, dbPassword, dbName)
 
 	// Retry loop to wait for database to be ready
 	var dbErr error
@@ -685,6 +686,34 @@ func getTotalUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"total_users": totalUsers})
 }
 
+
+/* func postMessage(c *gin.Context) {
+	var msg Message
+
+	// Bind JSON from request
+	if err := c.BindJSON(&msg); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid message format"})
+		return
+	}
+
+	// Set timestamp
+	msg.Timestamp = time.Now().Format("2006-01-02 15:04:05")
+
+	// Insert into DB
+	_, err := db.Exec(
+		"INSERT INTO messages (sender_id, receiver_id, content, timestamp) VALUES ($1, $2, $3, $4)",
+		msg.SenderID, msg.ReceiverID, msg.Content, msg.Timestamp,
+	)
+	if err != nil {
+		fmt.Printf("Failed to insert message: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save message"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Message saved"})
+} */
+
+
 func main() {
 	// Connect to DB
 	initDB()
@@ -709,7 +738,7 @@ func main() {
 
 	// production
 	corsConfig := cors.Config{
-		AllowOrigins:     []string{"http://tangle-chat.com", "http://3.128.94.181"},
+		AllowOrigins:     []string{"https://tangle-chat.com", "https://3.128.94.181"},
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
@@ -725,6 +754,7 @@ func main() {
 	r.GET("/getUser/:id", getUserInfo)
 	r.GET("/users", getUsers)
 	r.GET("/messages", getChatHistory)
+	//r.POST("/messages", rateLimitMiddleware(), postMessage)
 	r.GET("/total-users", getTotalUsers)
 	r.POST("/update-username", rateLimitMiddleware(), updateUsername)
 	r.POST("/update-bio", rateLimitMiddleware(), updateBio)

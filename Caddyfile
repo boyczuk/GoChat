@@ -1,0 +1,22 @@
+# Redirect www to root
+www.tangle-chat.com {
+    redir https://tangle-chat.com{uri}
+}
+
+# Main domain with HTTPS
+tangle-chat.com {
+    reverse_proxy /ws gochat-backend-1:8080
+    reverse_proxy /register gochat-backend-1:8080
+    reverse_proxy /login gochat-backend-1:8080
+    reverse_proxy /logout gochat-backend-1:8080
+    reverse_proxy /me gochat-backend-1:8080
+    reverse_proxy /getUser/* gochat-backend-1:8080
+    reverse_proxy /users gochat-backend-1:8080
+    reverse_proxy /messages gochat-backend-1:8080
+    reverse_proxy /total-users gochat-backend-1:8080
+    reverse_proxy /update-* gochat-backend-1:8080
+
+    # Everything else goes to frontend (React)
+    reverse_proxy gochat-frontend-1:80
+}
+

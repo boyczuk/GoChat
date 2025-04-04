@@ -21,6 +21,9 @@ RUN npm install
 # Copy all frontend files into the container
 COPY . .
 
+# disabled generate sourcemap
+ENV GENERATE_SOURCEMAP=false
+
 # Build the React app
 RUN npm run build
 
