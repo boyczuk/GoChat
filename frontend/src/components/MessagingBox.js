@@ -50,6 +50,8 @@ function MessagingBox({ userId, receiverId, navigateToPage }) {
 
     useEffect(() => {
         if (receiverId) {
+            setMessageHistory([]);
+            
             fetch(`${API_URL}/messages?sender_id=${userId}&receiver_id=${receiverId}`)
                 .then((response) => {
                     if (!response.ok) {
