@@ -7,7 +7,7 @@ import "./styles/MessagingBox.css";
 const WS_API_URL = process.env.REACT_APP_WS_URL || "ws://localhost:8080";
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
-function MessagingBox({ userId, receiverId, setCurrentPage, navigateToPage }) {
+function MessagingBox({ userId, receiverId, navigateToPage }) {
     const messagesEndRef = useRef(null);
     const [messageHistory, setMessageHistory] = useState([]);
     const [socket, setSocket] = useState(null);
@@ -42,7 +42,10 @@ function MessagingBox({ userId, receiverId, setCurrentPage, navigateToPage }) {
         };
 
 
-        return () => ws.close();
+        return () => {
+            ws.close();
+        }
+
     }, []);
 
     useEffect(() => {

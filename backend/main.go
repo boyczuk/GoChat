@@ -686,7 +686,6 @@ func getTotalUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"total_users": totalUsers})
 }
 
-
 /* func postMessage(c *gin.Context) {
 	var msg Message
 
@@ -713,7 +712,6 @@ func getTotalUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Message saved"})
 } */
 
-
 func main() {
 	// Connect to DB
 	initDB()
@@ -729,20 +727,20 @@ func main() {
 	}
 
 	// dev environment
-	// corsConfig := cors.Config{
-	// 	AllowOrigins:     []string{"http://localhost"},
-	// 	AllowMethods:     []string{"GET", "POST", "OPTIONS"},
-	// 	AllowHeaders:     []string{"Content-Type", "Authorization"},
-	// 	AllowCredentials: true,
-	// }
-
-	// production
 	corsConfig := cors.Config{
-		AllowOrigins:     []string{"https://tangle-chat.com", "https://3.128.94.181"},
+		AllowOrigins:     []string{"http://localhost"},
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
 	}
+
+	// production
+	// corsConfig := cors.Config{
+	// 	AllowOrigins:     []string{"https://tangle-chat.com", "https://3.128.94.181"},
+	// 	AllowMethods:     []string{"GET", "POST", "OPTIONS"},
+	// 	AllowHeaders:     []string{"Content-Type", "Authorization"},
+	// 	AllowCredentials: true,
+	// }
 
 	r.Use(cors.New(corsConfig))
 
@@ -775,6 +773,6 @@ func main() {
 	})
 
 	go broadcaster()
-	
+
 	r.Run("0.0.0.0:8080")
 }

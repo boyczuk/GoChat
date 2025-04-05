@@ -95,4 +95,8 @@
         max-height: 100px;
         object-fit: cover;
     }
+
+    .user-page {
+        margin-top: 7%;
+    }
 }
