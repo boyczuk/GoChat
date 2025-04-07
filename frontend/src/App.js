@@ -30,6 +30,7 @@ function RouterApp() {
             });
     }, []);
 
+    // Comment this out for mobile testing
     if (!isLoggedIn) {
         return <HomeLoggedOut onLoginSuccess={() => setIsLoggedIn(true)} />;
     }

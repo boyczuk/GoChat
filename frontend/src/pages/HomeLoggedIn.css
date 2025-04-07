@@ -40,17 +40,18 @@
     position: fixed;
     left: 0;
     top: 0;
-    width: 30vw;
     /* Takes 30% of the screen instead of 50% */
     height: 100vh;
     background-color: #EFF2EF;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-    padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     z-index: 1000;
-    transition: transform 0.3s ease-in-out;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    padding: 3%;
+    width: 30vw;
+    max-width: 100%;
 }
 
 /* Hidden sidebar when closed */
