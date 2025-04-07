@@ -21,7 +21,6 @@ function RegisterForm({ onLoginSuccess }) {
                 { username, password },
                 { withCredentials: true }
             );
-            console.log(response.data.message);
             // Set login to successful when post request successfully sent
             onLoginSuccess();
         } catch (err) {

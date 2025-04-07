@@ -21,7 +21,6 @@ function MessagingBox({ userId, receiverId, navigateToPage }) {
 
         ws.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            console.log("Incoming WebSocket message:", message); // Debug
 
             setMessageHistory((prevHistory) => {
                 const messageExists = prevHistory.some(
@@ -89,9 +88,7 @@ function MessagingBox({ userId, receiverId, navigateToPage }) {
                 });
             axios.get(`${API_URL}/getUser/${receiverId}`, { withCredentials: true })
                 .then((response) => {
-                    console.log(response.data);
                     setReceiverName(response.data.username);
-                    console.log(response.data.user_id);
                     setReceiverProfileId(response.data.user_id); // Assuming your API returns { id, name, email }
                     setProfilePicture(
                         response.data.profile_picture ? `data:image/jpeg;base64,${response.data.profile_picture}` : pfp
@@ -113,7 +110,6 @@ function MessagingBox({ userId, receiverId, navigateToPage }) {
     return (
         <div className="messaging-box">
             <div className="receiver-info" onClick={() => {
-                console.log("Navigating to viewProfile with ID:", receiverProfileId);
                 if (receiverProfileId) {
                     navigateToPage("viewProfile", { id: receiverProfileId });
                 } else {

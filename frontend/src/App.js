@@ -21,11 +21,9 @@ function RouterApp() {
         axios
             .get(`${API_URL}/me`, { withCredentials: true })
             .then((res) => {
-                console.log("User session active:", res.data);
                 setIsLoggedIn(true);
             })
             .catch((err) => {
-                console.log("No active session:", err);
                 setIsLoggedIn(false);
             });
     }, []);

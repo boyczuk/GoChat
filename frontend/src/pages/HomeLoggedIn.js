@@ -18,7 +18,6 @@ function HomeLoggedIn({ isUserPopupOpen, setIsUserPopupOpen, navigateToPage }) {
         axios
             .get(`${API_URL}/me`, { withCredentials: true })
             .then((response) => {
-                console.log("Fetched userId:", response.data.user_id); // Debug
                 setUserId(response.data.user_id);
             })
             .catch((err) => console.error("Error fetching user ID:", err));
@@ -31,10 +30,6 @@ function HomeLoggedIn({ isUserPopupOpen, setIsUserPopupOpen, navigateToPage }) {
             })
             .catch((err) => console.error("Error fetching total users:", err));
     }, [userId]);
-
-    useEffect(() => {
-        console.log("Updated userId:", userId, "Updated receiverId:", receiverId); // Debug
-    }, [userId, receiverId]);
 
     const handleBackdropClick = (e) => {
         if (e.target.classList.contains("popup-backdrop")) {

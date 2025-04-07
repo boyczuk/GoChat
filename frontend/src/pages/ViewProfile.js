@@ -10,13 +10,11 @@ function ViewProfile({ id }) {
     const [profilePicture, setProfilePicture] = useState(pfp);
     const [profileBio, setProfileBio] = useState("No bio yet!");
 
-    console.log(id);
 
     useEffect(() => {
         axios.get(`${API_URL}/getUser/${id}`, { withCredentials: true })
             .then((response) => {
                 const { username, bio, profile_picture } = response.data;
-                console.log("bio:",bio);
                 setProfileName(username || "Loading...");
                 setProfileBio(bio);
                 setProfilePicture(profile_picture ? `data:image/jpeg;base64,${profile_picture}` : pfp)

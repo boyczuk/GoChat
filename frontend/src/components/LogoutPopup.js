@@ -9,7 +9,6 @@ function LogoutPopup({ isOpen, onClose, onLogout }) {
         axios
             .post(`${API_URL}/logout`, {}, { withCredentials: true })
             .then((response) => {
-                console.log(response.data.message);
                 onLogout();
             })
             .catch((error) => {

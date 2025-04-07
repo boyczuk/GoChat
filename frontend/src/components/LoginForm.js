@@ -4,9 +4,6 @@ import './styles/LoginForm.css';
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
-console.log(process.env.REACT_APP_API_URL);
-console.log(API_URL);
-
 
 function LoginForm({ onLoginSuccess }) {
     const [username, setUsername] = useState('');
@@ -23,7 +20,6 @@ function LoginForm({ onLoginSuccess }) {
                 { username, password },
                 { withCredentials: true }
             );
-            console.log(response.data.message);
             // Set login to successful when post request successfully sent
             onLoginSuccess();
         } catch (err) {

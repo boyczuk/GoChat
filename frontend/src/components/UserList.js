@@ -59,6 +59,7 @@ function UserList({ setReceiverId }) {
                 const usersRes = await axios.get(`${API_URL}/users`);
                 const rawUsers = usersRes.data;
 
+                // This is shit, fix this when I have more time
                 const enrichedUsers = await Promise.all(
                     rawUsers.map(async (user) => {
                         try {
