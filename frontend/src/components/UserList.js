@@ -56,31 +56,9 @@ function UserList({ setReceiverId }) {
                 setMyUserId(myId);
                 cachedMyId = myId;
 
-                const usersRes = await axios.get(`${API_URL}/users`);
-                const rawUsers = usersRes.data;
-
-                // This is shit, fix this when I have more time
-                const enrichedUsers = await Promise.all(
-                    rawUsers.map(async (user) => {
-                        try {
-                            const res = await axios.get(`${API_URL}/getUser/${user.id}`, {
-                                withCredentials: true,
-                            });
-                            const { profile_picture } = res.data;
-                            return {
-                                ...user,
-                                profile_picture: profile_picture
-                                    ? `data:image/jpeg;base64,${profile_picture}`
-                                    : pfptemp,
-                            };
-                        } catch {
-                            return { ...user, profile_picture: pfptemp };
-                        }
-                    })
-                );
-
-                setUsers(enrichedUsers);
-                cachedUsers = enrichedUsers;
+                const users = await axios.get(`${API_URL}/users`, { withCredentials: true });
+                cachedUsers = users.data;
+                setUsers(users.data);
             } catch (err) {
                 console.error("Error fetching user data:", err);
             }
@@ -111,7 +89,7 @@ function UserList({ setReceiverId }) {
                             className={user.id === selectedUserId ? "selected-user" : ""}
                         >
                             <img
-                                src={user.profile_picture || pfptemp}
+                                src={user.profilePicture ? `data:image/jpeg;base64,${user.profilePicture}` : pfptemp}
                                 alt={`${user.name}'s profile`}
                                 width="50"
                                 height="50"

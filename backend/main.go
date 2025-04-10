@@ -143,6 +143,25 @@ func rateLimitMiddleware() gin.HandlerFunc {
 	}
 }
 
+func getUserIDFromSession(c *gin.Context) (int, error) {
+	sessionToken, err := c.Cookie("session_token")
+	if err != nil {
+		return 0, fmt.Errorf("no session token")
+	}
+
+	var userID int
+	err = db.QueryRow(
+		"SELECT user_id FROM sessions WHERE session_token = $1 AND expires_at > NOW()",
+		sessionToken,
+	).Scan(&userID)
+
+	if err != nil {
+		return 0, fmt.Errorf("invalid or expired session")
+	}
+
+	return userID, nil
+}
+
 // WebSocket handler to manage new connections (w - sending, r - info received)
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -439,11 +458,12 @@ func registerUser(c *gin.Context) {
 type User struct {
 	ID             int    `json:"id"`
 	Name           string `json:"name"`
-	ProfilePicture string `json:"profile_picture"`
+	ProfilePicture []byte `json:"-"`
+	EncodedPicture string `json:"profilePicture"`
 }
 
 func getUsers(c *gin.Context) {
-	rows, err := db.Query("SELECT id, username FROM users")
+	rows, err := db.Query("SELECT id, username, profile_picture FROM users")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users."})
 		return
@@ -453,12 +473,17 @@ func getUsers(c *gin.Context) {
 	var users []User
 	for rows.Next() {
 		var user User
-		err := rows.Scan(&user.ID, &user.Name)
+		err := rows.Scan(&user.ID, &user.Name, &user.ProfilePicture)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error scanning user data."})
 			return
 		}
-		user.ProfilePicture = "/static/images/pfptemp.jpg"
+
+		user.EncodedPicture = ""
+		if user.ProfilePicture != nil {
+			user.EncodedPicture = base64.StdEncoding.EncodeToString(user.ProfilePicture)
+		}
+
 		users = append(users, user)
 	}
 
@@ -618,10 +643,10 @@ func updateProfilePicture(c *gin.Context) {
 }
 
 func getUserInfo(c *gin.Context) {
-	_, err := c.Cookie("session_token")
+	_, err := getUserIDFromSession(c)
 	if err != nil {
-		fmt.Println("No session token found")
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Not logged in."})
+		fmt.Println("❌ Unauthorized access to user info:", err)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
@@ -632,29 +657,28 @@ func getUserInfo(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("Session token received")
+	fmt.Println("✅ Session token valid, fetching user:", userIDI)
 
 	var userID int
 	var username, bio string
 	var profilePicture []byte
 
 	err = db.QueryRow(
-		"SELECT users.id, users.username, users.bio, users.profile_picture FROM users WHERE id = $1",
+		"SELECT id, username, bio, profile_picture FROM users WHERE id = $1",
 		userIDI,
 	).Scan(&userID, &username, &bio, &profilePicture)
 
 	if err != nil {
-		fmt.Println("Error retrieving user from session:", err)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid session"})
+		fmt.Println("❌ Error retrieving user from DB:", err)
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
-
-	fmt.Println("User authenticated:", userID)
 
 	var encodedProfilePicture string
 	if profilePicture != nil {
 		encodedProfilePicture = base64.StdEncoding.EncodeToString(profilePicture)
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"user_id":         userID,
 		"username":        username,
@@ -666,20 +690,18 @@ func getUserInfo(c *gin.Context) {
 func getTotalUsers(c *gin.Context) {
 	fmt.Println("✅ /total-users route hit")
 
-	_, err := c.Cookie("session_token")
+	_, err := getUserIDFromSession(c)
 	if err != nil {
-		fmt.Println("No session token found")
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Not logged in."})
+		fmt.Println("❌ Unauthorized access to total users:", err)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
 	var totalUsers int
-
 	err = db.QueryRow("SELECT COUNT(*) FROM users").Scan(&totalUsers)
-
 	if err != nil {
-		fmt.Println("Error retrieving user count:", err)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid query"})
+		fmt.Println("❌ Error retrieving user count:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user count"})
 		return
 	}
 
@@ -727,20 +749,20 @@ func main() {
 	}
 
 	// dev environment
-	corsConfig := cors.Config{
-		AllowOrigins:     []string{"http://localhost"},
-		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
-		AllowHeaders:     []string{"Content-Type", "Authorization"},
-		AllowCredentials: true,
-	}
-
-	// production
 	// corsConfig := cors.Config{
-	// 	AllowOrigins:     []string{"https://tangle-chat.com", "https://3.128.94.181"},
+	// 	AllowOrigins:     []string{"http://localhost"},
 	// 	AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 	// 	AllowHeaders:     []string{"Content-Type", "Authorization"},
 	// 	AllowCredentials: true,
 	// }
+
+	// production
+	corsConfig := cors.Config{
+		AllowOrigins:     []string{"https://tangle-chat.com", "https://3.128.94.181"},
+		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
+		AllowHeaders:     []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+	}
 
 	r.Use(cors.New(corsConfig))
 
