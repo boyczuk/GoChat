@@ -13,6 +13,7 @@ function UserList({ setReceiverId }) {
     const [users, setUsers] = useState([]);
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [myUserId, setMyUserId] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     // Fake data for mobile testing
     // useEffect(() => {
@@ -47,18 +48,23 @@ function UserList({ setReceiverId }) {
             if (cachedUsers && cachedMyId) {
                 setUsers(cachedUsers);
                 setMyUserId(cachedMyId);
+                setLoading(false);
                 return;
             }
 
             try {
-                const meRes = await axios.get(`${API_URL}/me`, { withCredentials: true });
+                const [meRes, usersRes] = await Promise.all([
+                    axios.get(`${API_URL}/me`, { withCredentials: true }),
+                    axios.get(`${API_URL}/users`, { withCredentials: true }),
+                ])
+                setLoading(false);
+
                 const myId = meRes.data.user_id;
                 setMyUserId(myId);
                 cachedMyId = myId;
 
-                const users = await axios.get(`${API_URL}/users`, { withCredentials: true });
-                cachedUsers = users.data;
-                setUsers(users.data);
+                cachedUsers = usersRes.data;
+                setUsers(usersRes.data);
             } catch (err) {
                 console.error("Error fetching user data:", err);
             }
@@ -74,13 +80,15 @@ function UserList({ setReceiverId }) {
         setReceiverId(userId);
     };
 
+    if (loading) {
+        return <div className="user-list">Loading users...</div>;
+    }
+    
     return (
-
         <div className="user-list">
             <h1>Friends</h1>
             <ul>
                 {users
-                    // Find smarter way to do this later
                     .filter((user) => user.id !== myUserId)
                     .map((user) => (
                         <li
@@ -93,6 +101,7 @@ function UserList({ setReceiverId }) {
                                 alt={`${user.name}'s profile`}
                                 width="50"
                                 height="50"
+                                loading="lazy"
                             />
                             <p>{user.name}</p>
                         </li>
